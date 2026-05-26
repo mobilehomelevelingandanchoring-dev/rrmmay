@@ -76,9 +76,9 @@ export default async function ServiceTownPage({
 
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'Services', href: '/services/' },
-    { label: service.name, href: `/services/${service.slug}/` },
-    { label: location.name, href: `/services/${service.slug}/${location.slug}/` },
+    { label: 'Services', href: '/services' },
+    { label: service.name, href: `/services/${service.slug}` },
+    { label: location.name, href: `/services/${service.slug}/${location.slug}` },
   ];
 
   return (
@@ -274,6 +274,79 @@ export default async function ServiceTownPage({
                 </span>
               ))}
             </p>
+          </div>
+        </section>
+
+        {/* ALL LOCATIONS FOR THIS SERVICE */}
+        <section
+          id="all-locations"
+          aria-labelledby="all-locations-h2"
+          className="py-12 px-4 bg-white"
+        >
+          <div className="max-w-5xl mx-auto">
+            <h2
+              id="all-locations-h2"
+              className="text-xl sm:text-2xl font-bold text-gray-900 mb-2"
+            >
+              {service.name} — All Areas We Cover
+            </h2>
+            <p className="text-gray-600 mb-6 text-sm">
+              R.R.M provides {service.name.toLowerCase()} across 21 locations in the North West.
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {locations.map((loc) => (
+                <a
+                  key={loc.slug}
+                  href={`/services/${service.slug}/${loc.slug}`}
+                  className={`p-3 rounded-lg border text-sm font-medium transition-all ${
+                    loc.slug === location.slug
+                      ? 'bg-blue-700 text-white border-blue-700'
+                      : 'bg-white border-gray-200 text-blue-700 hover:border-blue-300 hover:shadow-sm'
+                  }`}
+                >
+                  {service.shortName} in {loc.name}
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ALL SERVICES IN THIS LOCATION */}
+        <section
+          id="all-services"
+          aria-labelledby="all-services-h2"
+          className="py-12 px-4 bg-gray-50"
+        >
+          <div className="max-w-5xl mx-auto">
+            <h2
+              id="all-services-h2"
+              className="text-xl sm:text-2xl font-bold text-gray-900 mb-2"
+            >
+              All Exterior Cleaning Services in {location.name}
+            </h2>
+            <p className="text-gray-600 mb-6 text-sm">
+              We offer 40 professional exterior cleaning services across {location.name} — click any service for details and a free quote.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {services.map((svc) => (
+                <a
+                  key={svc.slug}
+                  href={`/services/${svc.slug}/${location.slug}`}
+                  className={`p-4 rounded-xl border transition-all ${
+                    svc.slug === service.slug
+                      ? 'bg-blue-700 text-white border-blue-700'
+                      : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm'
+                  }`}
+                >
+                  <span className={`block font-semibold text-sm ${svc.slug === service.slug ? 'text-white' : 'text-blue-700'}`}>
+                    {svc.shortName} in {location.name}
+                  </span>
+                  <span className={`block text-xs mt-1 line-clamp-2 ${svc.slug === service.slug ? 'text-blue-100' : 'text-gray-500'}`}>
+                    {svc.description}
+                  </span>
+                </a>
+              ))}
+            </div>
           </div>
         </section>
 

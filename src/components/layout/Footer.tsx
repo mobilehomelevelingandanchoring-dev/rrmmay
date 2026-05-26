@@ -2,32 +2,8 @@
 
 import Link from 'next/link';
 import { Droplets, Phone, Mail, Clock, Youtube, Facebook, Instagram } from 'lucide-react';
-
-const services = [
-  { name: 'Pressure Washing', href: '/services/pressure-washing' },
-  { name: 'Driveway Cleaning', href: '/services/driveway-cleaning' },
-  { name: 'Roof Cleaning', href: '/services/roof-cleaning' },
-  { name: 'Gutter Cleaning', href: '/services/gutter-cleaning' },
-  { name: 'Window Cleaning', href: '/services/window-cleaning' },
-  { name: 'Render Cleaning', href: '/services/render-cleaning' },
-  { name: 'Soft Washing', href: '/services/soft-washing' },
-  { name: 'Moss & Algae Removal', href: '/services/moss-removal' },
-];
-
-const areas = [
-  { name: 'Newton-le-Willows', href: '/areas/newton-le-willows' },
-  { name: 'Warrington', href: '/areas/warrington' },
-  { name: 'St Helens', href: '/areas/st-helens' },
-  { name: 'Widnes', href: '/areas/widnes' },
-  { name: 'Liverpool', href: '/areas/liverpool' },
-  { name: 'Manchester', href: '/areas/manchester' },
-  { name: 'Golborne', href: '/areas/golborne' },
-  { name: 'Huyton', href: '/areas/huyton' },
-  { name: 'Lymm', href: '/areas/lymm' },
-  { name: 'Wigan', href: '/areas/wigan' },
-  { name: 'Skelmersdale', href: '/areas/skelmersdale' },
-  { name: 'Greater Manchester', href: '/areas/greater-manchester' },
-];
+import { services as allServices } from '@/data/services';
+import { locations as allLocations } from '@/data/locations';
 
 const socialLinks = [
   {
@@ -89,7 +65,7 @@ export function Footer() {
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-5">
 
           {/* Company Info & Contact */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 md:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-6 group">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-accent-foreground group-hover:scale-110 group-hover:shadow-lg transition-all duration-200">
                 <Droplets className="h-6 w-6" aria-hidden="true" />
@@ -155,16 +131,16 @@ export function Footer() {
             </p>
           </div>
 
-          {/* Services */}
-          <nav aria-label="Services footer navigation" className="lg:col-span-1">
+          {/* All Services — 40 services in 2-column grid */}
+          <nav aria-label="Services footer navigation" className="lg:col-span-2">
             <h3 className="font-display text-base font-semibold mb-4 text-accent">Our Services</h3>
-            <ul className="space-y-2.5">
-              {services.map((service) => (
-                <li key={service.name}>
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-2">
+              {allServices.map((service) => (
+                <li key={service.slug}>
                   <Link
-                    href={service.href}
+                    href={`/services/${service.slug}`}
                     className="text-sm text-primary-foreground/70 hover:text-accent transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded px-1"
-                    title={`Professional ${service.name} in Newton-le-Willows and Greater Manchester`}
+                    title={`Professional ${service.name} in Newton-le-Willows and the North West`}
                   >
                     {service.name}
                   </Link>
@@ -173,18 +149,18 @@ export function Footer() {
             </ul>
           </nav>
 
-          {/* Service Areas */}
+          {/* All Locations — all 21 areas using /locations/ paths */}
           <nav aria-label="Service areas footer navigation" className="lg:col-span-1">
             <h3 className="font-display text-base font-semibold mb-4 text-accent">Service Areas</h3>
             <ul className="space-y-2.5">
-              {areas.map((area) => (
-                <li key={area.name}>
+              {allLocations.map((loc) => (
+                <li key={loc.slug}>
                   <Link
-                    href={area.href}
+                    href={`/locations/${loc.slug}`}
                     className="text-sm text-primary-foreground/70 hover:text-accent transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded px-1"
-                    title={`Pressure washing and exterior cleaning services in ${area.name}`}
+                    title={`Pressure washing and exterior cleaning services in ${loc.name}`}
                   >
-                    {area.name}
+                    {loc.name}
                   </Link>
                 </li>
               ))}

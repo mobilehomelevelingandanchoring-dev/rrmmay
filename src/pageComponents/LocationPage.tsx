@@ -127,7 +127,7 @@ export default function LocationPageContent({ params }: LocationPageProps) {
           '@type': 'Service',
           name: s.name,
           description: s.description,
-          url: `${BASE_URL}/services/${s.slug}/${location.slug}/`,
+          url: `${BASE_URL}/services/${s.slug}/${location.slug}`,
         },
       })),
     },
@@ -153,12 +153,12 @@ export default function LocationPageContent({ params }: LocationPageProps) {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: `${BASE_URL}/` },
-      { '@type': 'ListItem', position: 2, name: 'Locations', item: `${BASE_URL}/locations/` },
+      { '@type': 'ListItem', position: 2, name: 'Locations', item: `${BASE_URL}/locations` },
       {
         '@type': 'ListItem',
         position: 3,
         name: `Exterior Cleaning ${location.name}`,
-        item: `${BASE_URL}/locations/${location.slug}/`,
+        item: `${BASE_URL}/locations/${location.slug}`,
       },
     ],
   };
@@ -205,7 +205,7 @@ export default function LocationPageContent({ params }: LocationPageProps) {
                 </li>
                 <li aria-hidden="true" className="text-blue-400">/</li>
                 <li itemScope itemType="https://schema.org/ListItem" itemProp="itemListElement">
-                  <Link href="/locations/" itemProp="item" className="hover:text-white transition-colors">
+                  <Link href="/locations" itemProp="item" className="hover:text-white transition-colors">
                     <span itemProp="name">Locations</span>
                   </Link>
                   <meta itemProp="position" content="2" />
@@ -350,7 +350,7 @@ export default function LocationPageContent({ params }: LocationPageProps) {
               {services.map((service) => (
                 <Link
                   key={service.slug}
-                  href={`/services/${service.slug}/${location.slug}/`}
+                  href={`/services/${service.slug}/${location.slug}`}
                   aria-label={`${service.name} in ${location.name} — click for pricing and details`}
                   className="group bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all"
                   itemScope
@@ -389,7 +389,7 @@ export default function LocationPageContent({ params }: LocationPageProps) {
             <VideoEmbed
               title={`Professional Exterior Cleaning Services in ${location.name}`}
               description={`See our expert cleaning techniques in action in ${location.name}. Watch us deliver professional exterior cleaning results using specialised equipment and proven methods. This video demonstrates the quality and care we bring to every project in ${location.name} and across ${location.county}.`}
-              relatedPageUrl={`/locations/${location.slug}/`}
+              relatedPageUrl={`/locations/${location.slug}`}
               relatedPageLabel={`More about cleaning services in ${location.name}`}
               location={location.name}
             />
@@ -414,7 +414,7 @@ export default function LocationPageContent({ params }: LocationPageProps) {
                 {nearbyLocationsList.map((nearby) => (
                   <Link
                     key={nearby.slug}
-                    href={`/locations/${nearby.slug}/`}
+                    href={`/locations/${nearby.slug}`}
                     aria-label={`Exterior cleaning services in ${nearby.name}, ${nearby.county}`}
                     className="p-4 bg-white rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-sm transition-all"
                     itemScope
