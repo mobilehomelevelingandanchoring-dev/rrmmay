@@ -18,7 +18,7 @@ export async function generateMetadata({
   const problem = problems[problemSlug];
   if (!problem) return {};
 
-  const canonical = `${BASE_URL}/problems/${problemSlug}/`;
+  const canonical = `${BASE_URL}/problems/${problemSlug}`;
 
   // LLM-optimised title: keyword-first, ≤60 chars
   const title = problem.metaTitle.length <= 60

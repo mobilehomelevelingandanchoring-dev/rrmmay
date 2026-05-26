@@ -20,12 +20,12 @@ export const metadata: Metadata = {
     'free no-obligation cleaning quote',
     'pressure washing near me quote',
   ],
-  alternates: { canonical: `${BASE_URL}/contact/` },
+  alternates: { canonical: `${BASE_URL}/contact` },
   openGraph: {
     title: 'Contact R.R.M External Cleaning | Free Quote North West',
     description:
       'Get a free no-obligation quote for exterior cleaning near you. Call 07845 463877 or email us. Serving Warrington, Newton-le-Willows, St Helens & the wider North West. Available 24/7.',
-    url: `${BASE_URL}/contact/`,
+    url: `${BASE_URL}/contact`,
     type: 'website',
     siteName: SITE_NAME,
     locale: 'en_GB',

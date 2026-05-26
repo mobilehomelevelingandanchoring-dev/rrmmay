@@ -24,12 +24,12 @@ export const metadata: Metadata = {
     'pressure washing near me',
     'driveway cleaning near me',
   ],
-  alternates: { canonical: `${BASE_URL}/locations/` },
+  alternates: { canonical: `${BASE_URL}/locations` },
   openGraph: {
     title: 'Service Locations | Exterior Cleaning Near You | R.R.M',
     description:
       'Find exterior cleaning near you across the North West. R.R.M covers Warrington, Newton-le-Willows, St Helens, Widnes, Leigh, Manchester, Liverpool & 15 more locations. Free quotes.',
-    url: `${BASE_URL}/locations/`,
+    url: `${BASE_URL}/locations`,
     type: 'website',
     siteName: SITE_NAME,
     locale: 'en_GB',

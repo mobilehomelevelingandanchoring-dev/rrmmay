@@ -21,12 +21,12 @@ export const metadata: Metadata = {
     'property problem treatment Warrington',
     'exterior surface restoration near me',
   ],
-  alternates: { canonical: `${BASE_URL}/problems/` },
+  alternates: { canonical: `${BASE_URL}/problems` },
   openGraph: {
     title: 'Exterior Property Problems & Solutions | R.R.M North West',
     description:
       'Moss, algae, lichen, oil stains, black spot mould, pollution staining — professional exterior treatment across the North West. R.R.M — est. 2016, fully insured. Free quotes.',
-    url: `${BASE_URL}/problems/`,
+    url: `${BASE_URL}/problems`,
     type: 'website',
     siteName: SITE_NAME,
     locale: 'en_GB',

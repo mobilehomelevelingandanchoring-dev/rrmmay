@@ -3,11 +3,14 @@ Allow: /
 Disallow: /_next/
 Disallow: /api/
 
+# Block all parameterised URLs — no query-string pages exist on this site
+Disallow: /*?*
+
 Sitemap: https://rrmexternalcleaningspecialist.co.uk/sitemap.xml
 
-# Block common bad bots
+# Crawl-delay for high-volume bots
 User-agent: AhrefsBot
-Crawl-delay: 10
+Crawl-delay: 2
 
 User-agent: SemrushBot
-Crawl-delay: 10
+Crawl-delay: 2

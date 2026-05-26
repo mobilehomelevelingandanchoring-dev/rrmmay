@@ -34,7 +34,7 @@ export function generatePageMetadata(service: Service, location: Location): Meta
 
   const description = fullDesc.length <= 155 ? fullDesc : truncateAtWord(fullDesc, 152);
 
-  const canonical = `${BASE_URL}/services/${service.slug}/${location.slug}/`;
+  const canonical = `${BASE_URL}/services/${service.slug}/${location.slug}`;
 
   return {
     title: { absolute: title },
@@ -223,7 +223,7 @@ export function generateServiceIndexMetadata(service: Service): Metadata {
       ? fullDesc
       : truncateAtWord(fullDesc, 152);
 
-  const canonical = `${BASE_URL}/services/${service.slug}/`;
+  const canonical = `${BASE_URL}/services/${service.slug}`;
 
   return {
     title: { absolute: title },
@@ -262,11 +262,11 @@ export function generateServicesPageMetadata(): Metadata {
   return {
     title: { absolute: title },
     description,
-    alternates: { canonical: `${BASE_URL}/services/` },
+    alternates: { canonical: `${BASE_URL}/services` },
     openGraph: {
       title,
       description,
-      url: `${BASE_URL}/services/`,
+      url: `${BASE_URL}/services`,
       type: 'website',
       siteName: SITE_NAME,
       locale: 'en_GB',

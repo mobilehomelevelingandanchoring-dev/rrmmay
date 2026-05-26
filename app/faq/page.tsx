@@ -25,12 +25,12 @@ export const metadata: Metadata = {
     'exterior cleaning near me FAQ',
     'how much does pressure washing cost',
   ],
-  alternates: { canonical: `${BASE_URL}/faq/` },
+  alternates: { canonical: `${BASE_URL}/faq` },
   openGraph: {
     title: 'FAQs — Exterior Cleaning North West | R.R.M Specialist',
     description:
       'Common questions about pressure washing, driveway cleaning, roof cleaning, gutter clearing, render cleaning & more. R.R.M External Cleaning Specialist — North West.',
-    url: `${BASE_URL}/faq/`,
+    url: `${BASE_URL}/faq`,
     type: 'website',
     siteName: SITE_NAME,
     locale: 'en_GB',

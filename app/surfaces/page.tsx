@@ -22,12 +22,12 @@ export const metadata: Metadata = {
     'surface-specific exterior cleaning',
     'exterior surface cleaning North West',
   ],
-  alternates: { canonical: `${BASE_URL}/surfaces/` },
+  alternates: { canonical: `${BASE_URL}/surfaces` },
   openGraph: {
     title: 'Exterior Cleaning by Surface Type | R.R.M North West',
     description:
       'Surface-specific exterior cleaning — concrete, block paving, tarmac, render, roof tiles, uPVC, timber, glass. R.R.M External Cleaning Specialist. Free no-obligation quotes across the North West.',
-    url: `${BASE_URL}/surfaces/`,
+    url: `${BASE_URL}/surfaces`,
     type: 'website',
     siteName: SITE_NAME,
     locale: 'en_GB',

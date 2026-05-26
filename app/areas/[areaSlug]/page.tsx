@@ -45,7 +45,7 @@ export async function generateMetadata({
   const { areaSlug } = await params;
   const meta = areaMetadata[areaSlug];
 
-  const canonical = `${BASE_URL}/areas/${areaSlug}/`;
+  const canonical = `${BASE_URL}/locations/${areaSlug}`;
 
   if (!meta) {
     return {

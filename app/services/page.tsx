@@ -22,12 +22,12 @@ export const metadata: Metadata = {
     'exterior cleaning specialist near me',
     'professional exterior cleaning',
   ],
-  alternates: { canonical: `${BASE_URL}/services/` },
+  alternates: { canonical: `${BASE_URL}/services` },
   openGraph: {
     title: 'Exterior Cleaning Services North West | 40 Services | R.R.M',
     description:
       '40 professional exterior cleaning services across 21 North West locations. Pressure washing, driveway cleaning, roof cleaning, gutters, render & more. R.R.M — fully insured, est. 2016. Free quotes.',
-    url: `${BASE_URL}/services/`,
+    url: `${BASE_URL}/services`,
     type: 'website',
     siteName: SITE_NAME,
     locale: 'en_GB',

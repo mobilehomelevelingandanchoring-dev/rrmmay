@@ -40,6 +40,23 @@ const nextConfig: NextConfig = {
         destination: '/',
         permanent: true,
       },
+      // Redirect /gallery (old SPA page) to /services
+      {
+        source: '/gallery',
+        destination: '/services',
+        permanent: true,
+      },
+      // /areas/* → /locations/* (areas are canonical to locations)
+      {
+        source: '/areas',
+        destination: '/locations',
+        permanent: true,
+      },
+      {
+        source: '/areas/:slug*',
+        destination: '/locations/:slug*',
+        permanent: true,
+      },
       // Old .html extensions
       {
         source: '/about.html',

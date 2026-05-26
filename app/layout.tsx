@@ -301,7 +301,7 @@ const localBusinessSchema = {
         itemOffered: {
           '@type': 'Service',
           name: 'Driveway Cleaning',
-          url: 'https://rrmexternalcleaningspecialist.co.uk/services/driveway-cleaning/',
+          url: 'https://rrmexternalcleaningspecialist.co.uk/services/driveway-cleaning',
         },
       },
       {
@@ -309,7 +309,7 @@ const localBusinessSchema = {
         itemOffered: {
           '@type': 'Service',
           name: 'Roof Cleaning',
-          url: 'https://rrmexternalcleaningspecialist.co.uk/services/roof-cleaning/',
+          url: 'https://rrmexternalcleaningspecialist.co.uk/services/roof-cleaning',
         },
       },
       {
@@ -317,7 +317,7 @@ const localBusinessSchema = {
         itemOffered: {
           '@type': 'Service',
           name: 'Render Cleaning',
-          url: 'https://rrmexternalcleaningspecialist.co.uk/services/render-cleaning/',
+          url: 'https://rrmexternalcleaningspecialist.co.uk/services/render-cleaning',
         },
       },
       {
@@ -325,7 +325,7 @@ const localBusinessSchema = {
         itemOffered: {
           '@type': 'Service',
           name: 'Gutter Cleaning',
-          url: 'https://rrmexternalcleaningspecialist.co.uk/services/gutter-cleaning/',
+          url: 'https://rrmexternalcleaningspecialist.co.uk/services/gutter-cleaning',
         },
       },
       {
@@ -333,7 +333,7 @@ const localBusinessSchema = {
         itemOffered: {
           '@type': 'Service',
           name: 'Patio Cleaning',
-          url: 'https://rrmexternalcleaningspecialist.co.uk/services/patio-cleaning/',
+          url: 'https://rrmexternalcleaningspecialist.co.uk/services/patio-cleaning',
         },
       },
       {
@@ -341,7 +341,7 @@ const localBusinessSchema = {
         itemOffered: {
           '@type': 'Service',
           name: 'Window Cleaning',
-          url: 'https://rrmexternalcleaningspecialist.co.uk/services/window-cleaning/',
+          url: 'https://rrmexternalcleaningspecialist.co.uk/services/window-cleaning',
         },
       },
       {
@@ -349,7 +349,7 @@ const localBusinessSchema = {
         itemOffered: {
           '@type': 'Service',
           name: 'Pressure Washing',
-          url: 'https://rrmexternalcleaningspecialist.co.uk/services/pressure-washing/',
+          url: 'https://rrmexternalcleaningspecialist.co.uk/services/pressure-washing',
         },
       },
       {
@@ -357,7 +357,7 @@ const localBusinessSchema = {
         itemOffered: {
           '@type': 'Service',
           name: 'Commercial Exterior Cleaning',
-          url: 'https://rrmexternalcleaningspecialist.co.uk/services/commercial-exterior-cleaning/',
+          url: 'https://rrmexternalcleaningspecialist.co.uk/services/commercial-exterior-cleaning',
         },
       },
     ],
@@ -472,15 +472,6 @@ const websiteSchema = {
   publisher: {
     '@id': 'https://rrmexternalcleaningspecialist.co.uk/#localbusiness',
   },
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: {
-      '@type': 'EntryPoint',
-      urlTemplate:
-        'https://rrmexternalcleaningspecialist.co.uk/services/?q={search_term_string}',
-    },
-    'query-input': 'required name=search_term_string',
-  },
 };
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -502,7 +493,7 @@ const serviceSchemas = [
   {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    '@id': 'https://rrmexternalcleaningspecialist.co.uk/services/driveway-cleaning/#service',
+    '@id': 'https://rrmexternalcleaningspecialist.co.uk/services/driveway-cleaning#service',
     name: 'Driveway Cleaning',
     // Factual, LLM-retrievable description — answers "what does driveway cleaning involve?"
     description:
@@ -521,12 +512,12 @@ const serviceSchemas = [
       { '@type': 'AdministrativeArea', name: 'Cheshire' },
       { '@type': 'AdministrativeArea', name: 'West Lancashire' },
     ],
-    url: 'https://rrmexternalcleaningspecialist.co.uk/services/driveway-cleaning/',
+    url: 'https://rrmexternalcleaningspecialist.co.uk/services/driveway-cleaning',
   },
   {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    '@id': 'https://rrmexternalcleaningspecialist.co.uk/services/roof-cleaning/#service',
+    '@id': 'https://rrmexternalcleaningspecialist.co.uk/services/roof-cleaning#service',
     name: 'Roof Cleaning',
     description:
       'Low-pressure soft wash roof cleaning with biodegradable biocide treatment to safely remove moss, lichen, and algae from roof tiles. Safe for all roof tile types including concrete, clay, and slate. Does not use high-pressure washing which can damage tile surfaces. Follow-up bio wash treatment available for heavily soiled roofs. Serving North West England.',
@@ -544,12 +535,12 @@ const serviceSchemas = [
       { '@type': 'AdministrativeArea', name: 'Cheshire' },
       { '@type': 'AdministrativeArea', name: 'West Lancashire' },
     ],
-    url: 'https://rrmexternalcleaningspecialist.co.uk/services/roof-cleaning/',
+    url: 'https://rrmexternalcleaningspecialist.co.uk/services/roof-cleaning',
   },
   {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    '@id': 'https://rrmexternalcleaningspecialist.co.uk/services/gutter-cleaning/#service',
+    '@id': 'https://rrmexternalcleaningspecialist.co.uk/services/gutter-cleaning#service',
     name: 'Gutter Cleaning',
     description:
       'Professional gutter cleaning and clearing service for residential and commercial properties. Removes leaves, debris, moss, and blockages from guttering and downpipes to prevent water damage and overflow. Gutter guard installation available to reduce future maintenance. Available across North West England with same-week appointments.',
@@ -567,12 +558,12 @@ const serviceSchemas = [
       { '@type': 'AdministrativeArea', name: 'Cheshire' },
       { '@type': 'AdministrativeArea', name: 'West Lancashire' },
     ],
-    url: 'https://rrmexternalcleaningspecialist.co.uk/services/gutter-cleaning/',
+    url: 'https://rrmexternalcleaningspecialist.co.uk/services/gutter-cleaning',
   },
   {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    '@id': 'https://rrmexternalcleaningspecialist.co.uk/services/render-cleaning/#service',
+    '@id': 'https://rrmexternalcleaningspecialist.co.uk/services/render-cleaning#service',
     name: 'Render Cleaning',
     // Answers "how do you clean K-Rend?" — a common LLM/voice query
     description:
@@ -591,12 +582,12 @@ const serviceSchemas = [
       { '@type': 'AdministrativeArea', name: 'Cheshire' },
       { '@type': 'AdministrativeArea', name: 'West Lancashire' },
     ],
-    url: 'https://rrmexternalcleaningspecialist.co.uk/services/render-cleaning/',
+    url: 'https://rrmexternalcleaningspecialist.co.uk/services/render-cleaning',
   },
   {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    '@id': 'https://rrmexternalcleaningspecialist.co.uk/services/patio-cleaning/#service',
+    '@id': 'https://rrmexternalcleaningspecialist.co.uk/services/patio-cleaning#service',
     name: 'Patio Cleaning',
     description:
       'Professional patio cleaning and hard surface restoration for block paving, sandstone, limestone, concrete, and natural stone patios. Hot water pressure washing removes embedded moss, lichen, algae, and weathered staining. Post-clean patio sealing available to protect surfaces from future biological growth and frost damage. Serves North West England.',
@@ -614,12 +605,12 @@ const serviceSchemas = [
       { '@type': 'AdministrativeArea', name: 'Cheshire' },
       { '@type': 'AdministrativeArea', name: 'West Lancashire' },
     ],
-    url: 'https://rrmexternalcleaningspecialist.co.uk/services/patio-cleaning/',
+    url: 'https://rrmexternalcleaningspecialist.co.uk/services/patio-cleaning',
   },
   {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    '@id': 'https://rrmexternalcleaningspecialist.co.uk/services/window-cleaning/#service',
+    '@id': 'https://rrmexternalcleaningspecialist.co.uk/services/window-cleaning#service',
     name: 'Window Cleaning',
     description:
       'Professional window cleaning using a water-fed pole system with purified water for streak-free results on both residential and commercial properties. Purified water leaves no minerals that cause streaking. Also covers UPVC frame cleaning, fascia board cleaning, soffit cleaning, and conservatory cleaning. Available across North West England.',
@@ -637,7 +628,7 @@ const serviceSchemas = [
       { '@type': 'AdministrativeArea', name: 'Cheshire' },
       { '@type': 'AdministrativeArea', name: 'West Lancashire' },
     ],
-    url: 'https://rrmexternalcleaningspecialist.co.uk/services/window-cleaning/',
+    url: 'https://rrmexternalcleaningspecialist.co.uk/services/window-cleaning',
   },
 ];
 

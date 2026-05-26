@@ -28,7 +28,7 @@ export async function generateMetadata({
       ? `Professional exterior cleaning in ${location.name} (${location.postcodes.join(', ')}) — pressure washing, driveway, roof, gutter & render cleaning. R.R.M — fully insured, 5-star rated, est. 2016. Free quotes. 24/7 available.`
       : `Professional exterior cleaning services in ${location.name}, ${location.county}. Pressure washing, driveway cleaning, roof & gutter services from R.R.M External Cleaning — fully insured, est. 2016. Free quotes.`;
 
-  const canonical = `${BASE_URL}/locations/${location.slug}/`;
+  const canonical = `${BASE_URL}/locations/${location.slug}`;
 
   return {
     title: { absolute: title },

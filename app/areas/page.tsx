@@ -22,12 +22,12 @@ export const metadata: Metadata = {
     'local exterior cleaning near me',
     'cleaning services near Newton-le-Willows',
   ],
-  alternates: { canonical: `${BASE_URL}/areas/` },
+  alternates: { canonical: `${BASE_URL}/locations` },
   openGraph: {
     title: 'Service Areas Near You | R.R.M Exterior Cleaning',
     description:
       'Exterior cleaning near you across Merseyside, Greater Manchester & Cheshire. Covering Lowton, Haydock, Earlestown, Burtonwood, Golborne & more. Free no-obligation quotes.',
-    url: `${BASE_URL}/areas/`,
+    url: `${BASE_URL}/locations`,
     type: 'website',
     siteName: SITE_NAME,
     locale: 'en_GB',

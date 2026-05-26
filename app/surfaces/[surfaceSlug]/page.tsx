@@ -18,7 +18,7 @@ export async function generateMetadata({
   const surface = surfaces[surfaceSlug];
   if (!surface) return {};
 
-  const canonical = `${BASE_URL}/surfaces/${surfaceSlug}/`;
+  const canonical = `${BASE_URL}/surfaces/${surfaceSlug}`;
 
   const title = surface.metaTitle.length <= 60
     ? surface.metaTitle

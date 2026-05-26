@@ -20,12 +20,12 @@ export const metadata: Metadata = {
     'established exterior cleaning company 2016',
     'RRM External Cleaning about us',
   ],
-  alternates: { canonical: `${BASE_URL}/about/` },
+  alternates: { canonical: `${BASE_URL}/about` },
   openGraph: {
     title: 'About R.R.M External Cleaning Specialist | Est. 2016',
     description:
       'Founded 2016 in Newton-le-Willows. Fully insured, no subcontracting, 5-star rated exterior cleaning across Merseyside, Greater Manchester & Cheshire. Free no-obligation quotes.',
-    url: `${BASE_URL}/about/`,
+    url: `${BASE_URL}/about`,
     type: 'website',
     siteName: SITE_NAME,
     locale: 'en_GB',
