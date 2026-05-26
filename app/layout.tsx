@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, Plus_Jakarta_Sans, Outfit, DM_Sans } from 'next/font/google';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Analytics } from '@/components/Analytics';
+import { WhatsAppButton } from '@/components/WhatsAppButton';
 import '@/index.css';
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -776,6 +777,7 @@ export default function RootLayout({
         <TooltipProvider>
           {children}
         </TooltipProvider>
+        <WhatsAppButton />
       </body>
     </html>
   );
