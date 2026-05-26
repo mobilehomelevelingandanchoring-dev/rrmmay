@@ -275,6 +275,16 @@ export function Footer() {
             </div>
             <p>Professional exterior cleaning since 2016</p>
           </div>
+          <p className="text-xs text-primary-foreground/40 mt-4 md:mt-0 text-center md:text-right">
+            Powered by{' '}
+            <a
+              href="https://smallbusinessmarketingprofessional.com/"
+              rel="external noopener noreferrer"
+              className="hover:text-primary-foreground/70 transition-colors duration-200 underline underline-offset-2"
+            >
+              Small Business Marketing Professional
+            </a>
+          </p>
         </div>
       </div>
 
