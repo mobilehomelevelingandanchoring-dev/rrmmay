@@ -1,7 +1,6 @@
-import { redirect } from 'next/navigation'
 import { isAdminAuthenticated } from '@/lib/adminAuth'
-import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { getAllBookings } from '@/lib/bookingStore'
+import { AdminSidebar } from '@/components/admin/AdminSidebar'
 
 export default async function AdminLayout({
   children,
@@ -9,7 +8,13 @@ export default async function AdminLayout({
   children: React.ReactNode
 }) {
   const authed = await isAdminAuthenticated()
-  if (!authed) redirect('/admin/login')
+
+  // Not authenticated: render only the child (login page) with no sidebar shell.
+  // The middleware already redirects unauthenticated requests away from all
+  // /admin/* routes except /admin/login, so no redirect is needed here.
+  if (!authed) {
+    return <>{children}</>
+  }
 
   const bookings = getAllBookings()
   const pendingCount = bookings.filter((b) => b.status === 'pending_quote').length
@@ -17,7 +22,6 @@ export default async function AdminLayout({
   return (
     <div className="flex min-h-screen bg-background">
       <AdminSidebar bookingCount={pendingCount} />
-      {/* Push content down on mobile for the fixed top bar */}
       <div className="flex-1 flex flex-col min-w-0 pt-14 md:pt-0">
         {children}
       </div>

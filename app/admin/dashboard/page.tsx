@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
+import { isAdminAuthenticated } from '@/lib/adminAuth'
 import { getAllBookings } from '@/lib/bookingStore'
 import { JobCard } from '@/components/admin/JobCard'
 import { JobTable } from '@/components/admin/JobTable'
@@ -26,6 +28,8 @@ interface PageProps {
 }
 
 export default async function AdminDashboardPage({ searchParams }: PageProps) {
+  if (!(await isAdminAuthenticated())) redirect('/admin/login')
+
   const { status: statusFilter = 'all' } = await searchParams
   const allBookings = getAllBookings()
 
