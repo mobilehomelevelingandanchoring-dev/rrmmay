@@ -31,21 +31,17 @@ export function StepContact({ defaultValues, onChange }: StepContactProps) {
       address: defaultValues.address ?? '',
       notes: defaultValues.notes ?? '',
     },
-    mode: 'onChange',
+    mode: 'onTouched',
   })
 
-  // Propagate changes upward
+  // Propagate changes upward — validate via schema directly for reliable isValid
   useEffect(() => {
     const sub = form.watch((values) => {
-      onChange(values as Partial<ContactFormData>, form.formState.isValid)
+      const result = contactSchema.safeParse(values)
+      onChange(values as Partial<ContactFormData>, result.success)
     })
     return () => sub.unsubscribe()
   }, [form, onChange])
-
-  // Trigger initial validity check
-  useEffect(() => {
-    form.trigger()
-  }, [form])
 
   return (
     <div className="space-y-6">
@@ -191,7 +187,7 @@ export function StepContact({ defaultValues, onChange }: StepContactProps) {
             <p className="text-xs text-muted-foreground">
               Send photos of your property via WhatsApp to{' '}
               <a
-                href="https://wa.me/447000000000"
+                href="https://wa.me/447845463877"
                 className="text-accent font-semibold underline underline-offset-2"
               >
                 WhatsApp us

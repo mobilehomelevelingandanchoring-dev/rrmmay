@@ -14,8 +14,15 @@ export const contactSchema = z.object({
   name: z.string().min(2, 'Full name is required').max(100),
   phone: z
     .string()
-    .min(10, 'A valid UK phone number is required')
-    .regex(/^(\+44\s?|0)[0-9]{9,10}$/, 'Enter a valid UK phone number (e.g. 07700 900123)'),
+    .min(1, 'Phone number is required')
+    .refine(
+      (v) => {
+        // Strip spaces, hyphens, and parentheses before checking format
+        const stripped = v.replace(/[\s\-\(\)]/g, '')
+        return /^(\+44|0044|0)\d{9,10}$/.test(stripped)
+      },
+      'Enter a valid UK phone number (e.g. 07700 900123 or +44 7700 900123)'
+    ),
   email: z.string().email('Enter a valid email address'),
   postalCode: z
     .string()
