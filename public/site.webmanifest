@@ -1,0 +1,22 @@
+{
+  "name": "R.R.M Exterior Cleaning Specialist",
+  "short_name": "RRM Cleaning",
+  "description": "Professional exterior cleaning services in Greater Manchester",
+  "icons": [
+    {
+      "src": "/logo.webp",
+      "sizes": "192x192",
+      "type": "image/webp"
+    },
+    {
+      "src": "/logo.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ],
+  "theme_color": "#175ea3",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}
