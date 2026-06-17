@@ -3,7 +3,7 @@
 import { cookies } from 'next/headers'
 import { createHmac } from 'crypto'
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? 'rrm-admin-2024'
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? 'rrm2026.com'
 const SESSION_COOKIE = 'rrm_admin_session'
 const SECRET = process.env.SESSION_SECRET ?? 'rrm-session-secret-key'
 
