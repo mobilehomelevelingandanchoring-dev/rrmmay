@@ -771,6 +771,84 @@ export default function RootLayout({
             dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
           />
         ))}
+
+        {/* ── SCHEMA: SiteNavigationElement ────────────────────────────────
+            Encodes the topical map through navigation structure.
+            Korey/holistic SEO: nav schema reinforces entity relationships
+            between service silos, location entities, and problem/surface types.
+            Google uses this to understand content hierarchy and topic clusters.
+        ─────────────────────────────────────────────────────────────────── */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'SiteNavigationElement',
+              '@id': 'https://rrmexternalcleaningspecialist.co.uk/#primary-nav',
+              name: 'Primary Navigation',
+              url: 'https://rrmexternalcleaningspecialist.co.uk',
+              hasPart: [
+                {
+                  '@type': 'SiteNavigationElement',
+                  name: 'Cleaning Services',
+                  description: 'Professional exterior cleaning services across Northwest England — driveways, roofs, gutters, render, windows, and commercial premises',
+                  url: 'https://rrmexternalcleaningspecialist.co.uk/services',
+                  hasPart: [
+                    { '@type': 'SiteNavigationElement', name: 'Driveway Cleaning', url: 'https://rrmexternalcleaningspecialist.co.uk/services/driveway-cleaning' },
+                    { '@type': 'SiteNavigationElement', name: 'Patio Cleaning', url: 'https://rrmexternalcleaningspecialist.co.uk/services/patio-cleaning' },
+                    { '@type': 'SiteNavigationElement', name: 'Roof Cleaning', url: 'https://rrmexternalcleaningspecialist.co.uk/services/roof-cleaning' },
+                    { '@type': 'SiteNavigationElement', name: 'Gutter Cleaning', url: 'https://rrmexternalcleaningspecialist.co.uk/services/gutter-cleaning' },
+                    { '@type': 'SiteNavigationElement', name: 'Render Cleaning', url: 'https://rrmexternalcleaningspecialist.co.uk/services/render-cleaning' },
+                    { '@type': 'SiteNavigationElement', name: 'Window Cleaning', url: 'https://rrmexternalcleaningspecialist.co.uk/services/window-cleaning' },
+                    { '@type': 'SiteNavigationElement', name: 'Pressure Washing', url: 'https://rrmexternalcleaningspecialist.co.uk/services/pressure-washing' },
+                    { '@type': 'SiteNavigationElement', name: 'Algae Removal', url: 'https://rrmexternalcleaningspecialist.co.uk/services/algae-removal' },
+                    { '@type': 'SiteNavigationElement', name: 'Moss Removal', url: 'https://rrmexternalcleaningspecialist.co.uk/services/moss-removal' },
+                    { '@type': 'SiteNavigationElement', name: 'Commercial Cleaning', url: 'https://rrmexternalcleaningspecialist.co.uk/services/commercial-exterior-cleaning' },
+                  ],
+                },
+                {
+                  '@type': 'SiteNavigationElement',
+                  name: 'Service Locations',
+                  description: 'Exterior cleaning service areas across Merseyside, Cheshire, Greater Manchester, and West Lancashire',
+                  url: 'https://rrmexternalcleaningspecialist.co.uk/locations',
+                  hasPart: [
+                    { '@type': 'SiteNavigationElement', name: 'Newton-le-Willows', url: 'https://rrmexternalcleaningspecialist.co.uk/locations/newton-le-willows' },
+                    { '@type': 'SiteNavigationElement', name: 'Warrington', url: 'https://rrmexternalcleaningspecialist.co.uk/locations/warrington' },
+                    { '@type': 'SiteNavigationElement', name: 'St Helens', url: 'https://rrmexternalcleaningspecialist.co.uk/locations/st-helens' },
+                    { '@type': 'SiteNavigationElement', name: 'Wigan', url: 'https://rrmexternalcleaningspecialist.co.uk/locations/leigh' },
+                    { '@type': 'SiteNavigationElement', name: 'Widnes', url: 'https://rrmexternalcleaningspecialist.co.uk/locations/widnes' },
+                  ],
+                },
+                {
+                  '@type': 'SiteNavigationElement',
+                  name: 'Common Exterior Problems',
+                  description: 'Exterior property problems solved — moss growth, algae staining, lichen, oil stains, and pollution discoloration',
+                  url: 'https://rrmexternalcleaningspecialist.co.uk/problems',
+                  hasPart: [
+                    { '@type': 'SiteNavigationElement', name: 'Moss Growth', url: 'https://rrmexternalcleaningspecialist.co.uk/problems/moss-growth' },
+                    { '@type': 'SiteNavigationElement', name: 'Algae Discoloration', url: 'https://rrmexternalcleaningspecialist.co.uk/problems/algae-discoloration' },
+                    { '@type': 'SiteNavigationElement', name: 'Oil Stains', url: 'https://rrmexternalcleaningspecialist.co.uk/problems/oil-stains' },
+                  ],
+                },
+                {
+                  '@type': 'SiteNavigationElement',
+                  name: 'Surface Types We Clean',
+                  description: 'Expert cleaning for all exterior surface materials — concrete, block paving, tarmac, render, brick, roof tiles, uPVC, and glass',
+                  url: 'https://rrmexternalcleaningspecialist.co.uk/surfaces',
+                  hasPart: [
+                    { '@type': 'SiteNavigationElement', name: 'Concrete Cleaning', url: 'https://rrmexternalcleaningspecialist.co.uk/surfaces/concrete' },
+                    { '@type': 'SiteNavigationElement', name: 'Block Paving', url: 'https://rrmexternalcleaningspecialist.co.uk/surfaces/block-paving' },
+                    { '@type': 'SiteNavigationElement', name: 'Tarmac', url: 'https://rrmexternalcleaningspecialist.co.uk/surfaces/tarmac' },
+                    { '@type': 'SiteNavigationElement', name: 'Roof Tiles', url: 'https://rrmexternalcleaningspecialist.co.uk/surfaces/roof-tiles-gutters' },
+                  ],
+                },
+                { '@type': 'SiteNavigationElement', name: 'About Us', url: 'https://rrmexternalcleaningspecialist.co.uk/about' },
+                { '@type': 'SiteNavigationElement', name: 'FAQ', url: 'https://rrmexternalcleaningspecialist.co.uk/faq' },
+                { '@type': 'SiteNavigationElement', name: 'Contact & Free Quote', url: 'https://rrmexternalcleaningspecialist.co.uk/contact' },
+              ],
+            }),
+          }}
+        />
       </head>
       <body className="flex min-h-screen flex-col">
         <Analytics />
