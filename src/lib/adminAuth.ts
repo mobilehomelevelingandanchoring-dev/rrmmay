@@ -24,13 +24,11 @@ function verifySessionToken(token: string): boolean {
     const payload = decoded.slice(0, lastColon)
     const sig = decoded.slice(lastColon + 1)
     const expectedSig = signToken(payload)
-    // Constant-time comparison
     if (sig.length !== expectedSig.length) return false
     let diff = 0
     for (let i = 0; i < sig.length; i++) {
       diff |= sig.charCodeAt(i) ^ expectedSig.charCodeAt(i)
     }
-    // Sessions expire after 24 hours
     const tsStr = payload.split(':')[1]
     const age = Date.now() - parseInt(tsStr, 10)
     return diff === 0 && age < 24 * 60 * 60 * 1000
@@ -42,28 +40,40 @@ function verifySessionToken(token: string): boolean {
 export async function loginAction(
   password: string
 ): Promise<{ success: boolean; error?: string }> {
-  if (password !== ADMIN_PASSWORD) {
-    return { success: false, error: 'Incorrect password' }
+  try {
+    if (password !== ADMIN_PASSWORD) {
+      return { success: false, error: 'Incorrect password' }
+    }
+    const token = buildSessionToken()
+    const cookieStore = await cookies()
+    cookieStore.set(SESSION_COOKIE, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24,
+      path: '/',
+    })
+    return { success: true }
+  } catch {
+    return { success: false, error: 'Login failed. Please try again.' }
   }
-  const token = buildSessionToken()
-  const cookieStore = await cookies()
-  cookieStore.set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24, // 24 hours
-    path: '/',
-  })
-  return { success: true }
 }
 
 export async function logoutAction(): Promise<void> {
-  const cookieStore = await cookies()
-  cookieStore.delete(SESSION_COOKIE)
+  try {
+    const cookieStore = await cookies()
+    cookieStore.delete(SESSION_COOKIE)
+  } catch {
+    // Ignore
+  }
 }
 
 export async function isAdminAuthenticated(): Promise<boolean> {
-  const cookieStore = await cookies()
-  const token = cookieStore.get(SESSION_COOKIE)?.value
-  return !!token && verifySessionToken(token)
+  try {
+    const cookieStore = await cookies()
+    const token = cookieStore.get(SESSION_COOKIE)?.value
+    return !!token && verifySessionToken(token)
+  } catch {
+    return false
+  }
 }

@@ -2,19 +2,28 @@ import fs from 'fs'
 import path from 'path'
 import type { Booking } from '@/types/booking'
 
-const DATA_DIR = path.join(process.cwd(), 'data')
+// Vercel serverless: /var/task is read-only → use /tmp (writable, ephemeral).
+// Self-hosted Node.js: use <project>/data/ (persistent).
+const DATA_DIR = process.env.VERCEL
+  ? '/tmp/rrm-data'
+  : path.join(process.cwd(), 'data')
+
 const BOOKINGS_FILE = path.join(DATA_DIR, 'bookings.json')
 
 function ensureDataDir(): void {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true })
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true })
+    }
+  } catch {
+    // Silently skip — reads will return [] and writes below handle their own errors
   }
 }
 
 function readBookings(): Booking[] {
-  ensureDataDir()
-  if (!fs.existsSync(BOOKINGS_FILE)) return []
   try {
+    ensureDataDir()
+    if (!fs.existsSync(BOOKINGS_FILE)) return []
     const raw = fs.readFileSync(BOOKINGS_FILE, 'utf-8')
     return JSON.parse(raw) as Booking[]
   } catch {
@@ -23,8 +32,12 @@ function readBookings(): Booking[] {
 }
 
 function writeBookings(bookings: Booking[]): void {
-  ensureDataDir()
-  fs.writeFileSync(BOOKINGS_FILE, JSON.stringify(bookings, null, 2), 'utf-8')
+  try {
+    ensureDataDir()
+    fs.writeFileSync(BOOKINGS_FILE, JSON.stringify(bookings, null, 2), 'utf-8')
+  } catch {
+    // Write failed (e.g. read-only filesystem). Data is not persisted this call.
+  }
 }
 
 function generateId(): string {
