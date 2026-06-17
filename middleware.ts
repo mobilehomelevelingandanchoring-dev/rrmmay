@@ -1,40 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createHmac } from 'crypto';
 
 const PRIMARY_DOMAIN = 'rrmexternalcleaningspecialist.co.uk';
 const SESSION_COOKIE = 'rrm_admin_session';
 const SECRET = process.env.SESSION_SECRET ?? 'rrm-session-secret-key';
 
-function verifySessionToken(token: string): boolean {
+// Uses Web Crypto API (Edge Runtime compatible — no Node.js 'crypto' import)
+async function verifySessionToken(token: string): Promise<boolean> {
   try {
-    const decoded = Buffer.from(token, 'base64').toString('utf-8');
+    const decoded = atob(token);
     const lastColon = decoded.lastIndexOf(':');
     const payload = decoded.slice(0, lastColon);
     const sig = decoded.slice(lastColon + 1);
-    const expectedSig = createHmac('sha256', SECRET).update(payload).digest('hex');
-    if (sig.length !== expectedSig.length) return false;
-    let diff = 0;
-    for (let i = 0; i < sig.length; i++) {
-      diff |= sig.charCodeAt(i) ^ expectedSig.charCodeAt(i);
-    }
+
+    const enc = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw',
+      enc.encode(SECRET),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+    const sigBuffer = await crypto.subtle.sign('HMAC', key, enc.encode(payload));
+    const expectedSig = Array.from(new Uint8Array(sigBuffer))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    if (sig !== expectedSig) return false;
     const tsStr = payload.split(':')[1];
     const age = Date.now() - parseInt(tsStr, 10);
-    return diff === 0 && age < 24 * 60 * 60 * 1000;
+    return age < 24 * 60 * 60 * 1000;
   } catch {
     return false;
   }
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   const { pathname, search } = request.nextUrl;
 
   // ── Admin route protection ──────────────────────────────────────────────
   if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
     const token = request.cookies.get(SESSION_COOKIE)?.value;
-    if (!token || !verifySessionToken(token)) {
-      const loginUrl = new URL('/admin/login', request.url);
-      return NextResponse.redirect(loginUrl);
+    const valid = token ? await verifySessionToken(token) : false;
+    if (!valid) {
+      return NextResponse.redirect(new URL('/admin/login', request.url));
     }
   }
 
