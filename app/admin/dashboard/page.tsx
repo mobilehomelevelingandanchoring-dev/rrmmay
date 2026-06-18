@@ -12,8 +12,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
-// Revalidate every 30 seconds for near-real-time updates without full SSR on every request
-export const revalidate = 30
+export const dynamic = 'force-dynamic'
 
 const STATUS_FILTERS: { label: string; value: BookingStatus | 'all' }[] = [
   { label: 'All', value: 'all' },
