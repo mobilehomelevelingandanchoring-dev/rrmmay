@@ -31,10 +31,17 @@ export async function GET() {
     try {
       const { Redis } = await import('@upstash/redis')
       const redis = new Redis({ url: redisUrl, token: redisToken })
-      const bookings = await redis.get<unknown[]>('rrm:bookings')
+
+      // Test write
+      await redis.set('rrm:diagnose-test', JSON.stringify({ ok: true, ts: Date.now() }))
+      const writeCheck = await redis.get<string>('rrm:diagnose-test')
+      info.write_test = writeCheck ? 'OK' : 'FAILED — write did not persist'
+
+      // Read bookings
+      const raw = await redis.get<unknown>('rrm:bookings')
       info.redis_test = 'connection OK'
-      info.booking_count = Array.isArray(bookings) ? bookings.length : 0
-      info.raw_type = typeof bookings
+      info.bookings_raw_type = Array.isArray(raw) ? 'array' : typeof raw
+      info.booking_count = Array.isArray(raw) ? raw.length : 0
     } catch (err) {
       info.redis_test = 'FAILED'
       info.redis_error = String(err)

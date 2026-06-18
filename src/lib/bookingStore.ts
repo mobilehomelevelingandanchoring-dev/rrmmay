@@ -54,7 +54,10 @@ async function getRedis() {
 async function readFromRedis(): Promise<Booking[]> {
   try {
     const redis = await getRedis()
-    return (await redis.get<Booking[]>(REDIS_KEY)) ?? []
+    const raw = await redis.get<string>(REDIS_KEY)
+    if (!raw) return []
+    const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
+    return Array.isArray(parsed) ? parsed : []
   } catch (err) {
     console.error('[bookingStore] Redis read error:', err)
     return []
@@ -64,7 +67,7 @@ async function readFromRedis(): Promise<Booking[]> {
 async function writeToRedis(bookings: Booking[]): Promise<void> {
   try {
     const redis = await getRedis()
-    await redis.set(REDIS_KEY, bookings)
+    await redis.set(REDIS_KEY, JSON.stringify(bookings))
   } catch (err) {
     console.error('[bookingStore] Redis write error:', err)
   }
