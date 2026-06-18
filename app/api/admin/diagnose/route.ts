@@ -12,9 +12,11 @@ export async function GET() {
   const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN
   const kvUrl = process.env.KV_REST_API_URL
   const kvToken = process.env.KV_REST_API_TOKEN
+  const prefixedUrl = process.env.rrmexternalcleaningspecialist_KV_REST_API_URL
+  const prefixedToken = process.env.rrmexternalcleaningspecialist_KV_REST_API_TOKEN
 
-  const redisUrl = upstashUrl ?? kvUrl ?? ''
-  const redisToken = upstashToken ?? kvToken ?? ''
+  const redisUrl = upstashUrl ?? kvUrl ?? prefixedUrl ?? ''
+  const redisToken = upstashToken ?? kvToken ?? prefixedToken ?? ''
   const useRedis = !!(redisUrl && redisToken)
 
   const info: Record<string, unknown> = {
@@ -24,7 +26,10 @@ export async function GET() {
       UPSTASH_REDIS_REST_TOKEN: upstashToken ? '✓ set' : '✗ missing',
       KV_REST_API_URL: kvUrl ? '✓ set' : '✗ missing',
       KV_REST_API_TOKEN: kvToken ? '✓ set' : '✗ missing',
+      'rrmexternalcleaningspecialist_KV_REST_API_URL': prefixedUrl ? '✓ set' : '✗ missing',
+      'rrmexternalcleaningspecialist_KV_REST_API_TOKEN': prefixedToken ? '✓ set' : '✗ missing',
     },
+    active_url: redisUrl ? redisUrl.slice(0, 30) + '...' : 'none',
   }
 
   if (useRedis) {

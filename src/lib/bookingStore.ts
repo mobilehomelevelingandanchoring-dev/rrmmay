@@ -10,10 +10,18 @@ import type { Booking } from '@/types/booking'
 //   • KV_REST_API_URL / KV_REST_API_TOKEN                (legacy Vercel KV)
 //
 // Development / self-hosted: falls back to a local JSON file.
+// Vercel can inject env vars with a project-name prefix (e.g. rrmexternalcleaningspecialist_KV_REST_API_URL).
+// Check all known naming conventions so it works regardless of how the integration was set up.
 const REDIS_URL =
-  process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL ?? ''
+  process.env.UPSTASH_REDIS_REST_URL ??
+  process.env.KV_REST_API_URL ??
+  process.env.rrmexternalcleaningspecialist_KV_REST_API_URL ??
+  ''
 const REDIS_TOKEN =
-  process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN ?? ''
+  process.env.UPSTASH_REDIS_REST_TOKEN ??
+  process.env.KV_REST_API_TOKEN ??
+  process.env.rrmexternalcleaningspecialist_KV_REST_API_TOKEN ??
+  ''
 const USE_REDIS = !!(REDIS_URL && REDIS_TOKEN)
 const REDIS_KEY = 'rrm:bookings'
 
