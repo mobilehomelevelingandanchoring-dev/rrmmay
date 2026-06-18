@@ -3,12 +3,19 @@ import path from 'path'
 import type { Booking } from '@/types/booking'
 
 // ─── Storage strategy ────────────────────────────────────────────────────────
-// Production (Vercel + Upstash): UPSTASH_REDIS_REST_URL is set automatically
-//   when you connect an Upstash Redis database in the Vercel marketplace.
-//   All serverless instances share the same Redis — bookings persist correctly.
+// Production (Vercel + Upstash): env vars are injected automatically when you
+//   connect an Upstash database via the Vercel marketplace. Two naming
+//   conventions exist depending on how the integration was created:
+//     • New Upstash integration: UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN
+//     • Vercel KV (legacy):      KV_REST_API_URL / KV_REST_API_TOKEN
+//   We support both.
 //
 // Development / self-hosted (no env var): falls back to a local JSON file.
-const USE_REDIS = !!(process.env.UPSTASH_REDIS_REST_URL)
+const REDIS_URL =
+  process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL ?? ''
+const REDIS_TOKEN =
+  process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN ?? ''
+const USE_REDIS = !!(REDIS_URL && REDIS_TOKEN)
 const REDIS_KEY = 'rrm:bookings'
 
 // ─── File-system fallback (local dev) ───────────────────────────────────────
@@ -41,17 +48,15 @@ function writeToFile(bookings: Booking[]): void {
 // ─── Redis helpers (Upstash) ─────────────────────────────────────────────────
 async function getRedis() {
   const { Redis } = await import('@upstash/redis')
-  return new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL!,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-  })
+  return new Redis({ url: REDIS_URL, token: REDIS_TOKEN })
 }
 
 async function readFromRedis(): Promise<Booking[]> {
   try {
     const redis = await getRedis()
     return (await redis.get<Booking[]>(REDIS_KEY)) ?? []
-  } catch {
+  } catch (err) {
+    console.error('[bookingStore] Redis read error:', err)
     return []
   }
 }
@@ -60,7 +65,9 @@ async function writeToRedis(bookings: Booking[]): Promise<void> {
   try {
     const redis = await getRedis()
     await redis.set(REDIS_KEY, bookings)
-  } catch { /* ignore — log in production monitoring */ }
+  } catch (err) {
+    console.error('[bookingStore] Redis write error:', err)
+  }
 }
 
 // ─── Internal read/write ─────────────────────────────────────────────────────
