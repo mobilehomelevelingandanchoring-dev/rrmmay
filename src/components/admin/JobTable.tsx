@@ -27,6 +27,21 @@ const STATUS_OPTIONS: { value: BookingStatus; label: string }[] = [
   { value: 'cancelled', label: 'Cancelled' },
 ]
 
+function formatDate(dateStr: string): string {
+  return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
+function formatTime(t: string): string {
+  const [h, m] = t.split(':').map(Number)
+  const period = h < 12 ? 'AM' : 'PM'
+  const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h
+  return `${h12}:${String(m).padStart(2, '0')} ${period}`
+}
+
 function InlineStatusEditor({ booking }: { booking: Booking }) {
   const [status, setStatus] = useState<BookingStatus>(booking.status)
   const [price, setPrice] = useState(booking.confirmedPrice?.toString() ?? '')
@@ -71,33 +86,19 @@ function InlineStatusEditor({ booking }: { booking: Booking }) {
 }
 
 export function JobTable({ bookings }: JobTableProps) {
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr + 'T00:00:00').toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    })
-
-  const formatTime = (t: string) => {
-    const [h, m] = t.split(':').map(Number)
-    const period = h < 12 ? 'AM' : 'PM'
-    const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h
-    return `${h12}:${String(m).padStart(2, '0')} ${period}`
-  }
-
   return (
     <div className="rounded-xl border overflow-hidden bg-card">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50">
             <TableHead className="font-semibold text-xs uppercase tracking-wide w-28">
-              Booking
+              Reference
             </TableHead>
             <TableHead className="font-semibold text-xs uppercase tracking-wide">
               Customer
             </TableHead>
             <TableHead className="font-semibold text-xs uppercase tracking-wide">
-              Services
+              Service / Message
             </TableHead>
             <TableHead className="font-semibold text-xs uppercase tracking-wide w-36">
               Scheduled
@@ -115,15 +116,21 @@ export function JobTable({ bookings }: JobTableProps) {
         </TableHeader>
         <TableBody>
           {bookings.map((booking) => {
-            const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(
-              `${booking.customer.address}, ${booking.customer.postalCode}`
-            )}`
-            const serviceCount = booking.services.length
-            const firstService = BOOKING_SERVICES.find((s) => s.id === booking.services[0])
+            const mapsQuery = booking.customer.address?.trim()
+              ? `${booking.customer.address}, ${booking.customer.postalCode}`
+              : booking.customer.postalCode
+            const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(mapsQuery)}`
+
+            const firstService = booking.services.length > 0
+              ? BOOKING_SERVICES.find((s) => s.id === booking.services[0])
+              : null
+            const extraCount = booking.services.length - 1
+
+            const hasSchedule = !!(booking.scheduledDate && booking.scheduledTime)
 
             return (
               <TableRow key={booking.id} className="hover:bg-muted/30 align-top">
-                {/* Booking ID */}
+                {/* Reference */}
                 <TableCell className="py-4">
                   <p className="text-xs font-mono text-muted-foreground">{booking.id}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -134,41 +141,61 @@ export function JobTable({ bookings }: JobTableProps) {
                 {/* Customer */}
                 <TableCell className="py-4">
                   <p className="font-semibold text-sm text-foreground">{booking.customer.name}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {booking.customer.address}
-                  </p>
+                  {booking.customer.address && (
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {booking.customer.address}
+                    </p>
+                  )}
                   <p className="text-xs font-mono text-muted-foreground">
                     {booking.customer.postalCode}
                   </p>
+                  {booking.customer.email && (
+                    <p className="text-xs text-muted-foreground mt-0.5 truncate max-w-[160px]">
+                      {booking.customer.email}
+                    </p>
+                  )}
                 </TableCell>
 
-                {/* Services */}
-                <TableCell className="py-4">
-                  <div className="flex flex-wrap gap-1">
-                    {firstService && (
+                {/* Service / Message */}
+                <TableCell className="py-4 max-w-[220px]">
+                  {firstService ? (
+                    <div className="flex flex-wrap gap-1 mb-1">
                       <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full font-medium">
                         {firstService.emoji} {firstService.label}
                       </span>
-                    )}
-                    {serviceCount > 1 && (
-                      <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-                        +{serviceCount - 1} more
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    ~{booking.estimatedDurationHours}h job
-                  </p>
+                      {extraCount > 0 && (
+                        <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                          +{extraCount} more
+                        </span>
+                      )}
+                    </div>
+                  ) : null}
+                  {booking.customer.notes && (
+                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                      {booking.customer.notes}
+                    </p>
+                  )}
                 </TableCell>
 
                 {/* Scheduled */}
                 <TableCell className="py-4">
-                  <p className="text-sm font-medium text-foreground">
-                    {formatDate(booking.scheduledDate)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {formatTime(booking.scheduledTime)}
-                  </p>
+                  {hasSchedule ? (
+                    <>
+                      <p className="text-sm font-medium text-foreground">
+                        {formatDate(booking.scheduledDate!)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatTime(booking.scheduledTime!)}
+                      </p>
+                      {booking.estimatedDurationHours ? (
+                        <p className="text-xs text-muted-foreground">
+                          ~{booking.estimatedDurationHours}h
+                        </p>
+                      ) : null}
+                    </>
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic">Awaiting schedule</p>
+                  )}
                 </TableCell>
 
                 {/* Price */}
@@ -178,9 +205,7 @@ export function JobTable({ bookings }: JobTableProps) {
                       £{booking.confirmedPrice.toFixed(2)}
                     </p>
                   ) : booking.estimatedPrice ? (
-                    <p className="text-xs text-muted-foreground">
-                      est. £{booking.estimatedPrice}
-                    </p>
+                    <p className="text-xs text-muted-foreground">est. £{booking.estimatedPrice}</p>
                   ) : (
                     <p className="text-xs text-muted-foreground">—</p>
                   )}
@@ -196,21 +221,13 @@ export function JobTable({ bookings }: JobTableProps) {
                   <div className="space-y-2">
                     <div className="flex gap-1.5">
                       <a href={`tel:${booking.customer.phone}`}>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-8 px-2 gap-1 text-xs"
-                        >
+                        <Button size="sm" variant="outline" className="h-8 px-2 gap-1 text-xs">
                           <Phone className="w-3 h-3" />
                           Call
                         </Button>
                       </a>
                       <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-8 px-2 gap-1 text-xs"
-                        >
+                        <Button size="sm" variant="outline" className="h-8 px-2 gap-1 text-xs">
                           <MapPin className="w-3 h-3" />
                           Map
                         </Button>
@@ -226,7 +243,7 @@ export function JobTable({ bookings }: JobTableProps) {
           {bookings.length === 0 && (
             <TableRow>
               <TableCell colSpan={7} className="py-12 text-center text-muted-foreground text-sm">
-                No bookings yet.
+                No quote requests yet.
               </TableCell>
             </TableRow>
           )}

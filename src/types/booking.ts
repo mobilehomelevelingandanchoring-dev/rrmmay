@@ -22,7 +22,7 @@ export interface BookingCustomer {
   phone: string
   email: string
   postalCode: string
-  address: string
+  address?: string     // optional — quote form collects postcode only
   notes?: string
 }
 
@@ -32,11 +32,11 @@ export interface Booking {
   updatedAt: string
   status: BookingStatus
   services: ServiceId[]
-  propertyType: PropertyType
+  propertyType?: PropertyType | ''
   bedroomCount?: number
-  scheduledDate: string
-  scheduledTime: string
-  estimatedDurationHours: number
+  scheduledDate?: string           // optional — quote form does not schedule
+  scheduledTime?: string           // optional
+  estimatedDurationHours?: number  // optional
   estimatedPrice?: number
   confirmedPrice?: number
   customer: BookingCustomer

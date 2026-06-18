@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
-import { BookingWizard } from '@/components/booking/BookingWizard'
+import { QuoteForm } from '@/components/booking/QuoteForm'
 
 export const metadata: Metadata = {
-  title: 'Book a Clean | RRM External Cleaning Specialist',
+  title: 'Free Quote | RRM External Cleaning Specialist',
   description:
-    'Book pressure washing, gutter clearing, roof cleaning, window cleaning or conservatory cleaning online. Get an instant estimate and choose your slot.',
+    'Request a free no-obligation quote for pressure washing, gutter clearing, roof cleaning, window cleaning or any exterior cleaning service. We respond within 24 hours.',
   robots: { index: false },
 }
 
 export default function BookPage() {
-  return <BookingWizard />
+  return <QuoteForm />
 }

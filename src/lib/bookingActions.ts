@@ -2,14 +2,28 @@
 
 import { revalidatePath } from 'next/cache'
 import { calculateEstimate } from '@/data/bookingServices'
-import { bookingSchema, type BookingFormData } from '@/lib/bookingSchema'
+import {
+  bookingSchema,
+  quoteSchema,
+  type BookingFormData,
+  type QuoteFormData,
+} from '@/lib/bookingSchema'
 import {
   createBooking,
   updateBooking,
   getAllBookings,
   getBookedTimeSlotsForDate,
 } from '@/lib/bookingStore'
-import type { Booking } from '@/types/booking'
+import type { Booking, ServiceId } from '@/types/booking'
+
+// Known ServiceId values that map to BOOKING_SERVICES
+const KNOWN_SERVICE_IDS: ServiceId[] = [
+  'pressure-washing',
+  'window-cleaning',
+  'gutter-clearing',
+  'roof-cleaning',
+  'conservatory-cleaning',
+]
 
 export async function submitBookingAction(
   data: BookingFormData
@@ -39,6 +53,42 @@ export async function submitBookingAction(
   })
 
   return { success: true, bookingId: booking.id }
+}
+
+// Quote request form — simpler single-page form, no scheduling
+export async function submitQuoteAction(
+  data: QuoteFormData
+): Promise<{ success: boolean; quoteId?: string; error?: string }> {
+  const parsed = quoteSchema.safeParse(data)
+  if (!parsed.success) {
+    return { success: false, error: 'Invalid form data. Please check your entries.' }
+  }
+
+  const { name, phone, email, postcode, service, message } = parsed.data
+
+  // Map to known ServiceId if the dropdown value is one of our standard IDs
+  const serviceId = service && KNOWN_SERVICE_IDS.includes(service as ServiceId)
+    ? (service as ServiceId)
+    : null
+
+  // For non-standard service selections (render-cleaning, driveway-cleaning, other, etc.)
+  // prepend service label to the customer message so admin can see it
+  const fullNotes = service && !serviceId && service !== ''
+    ? `Service requested: ${service}\n\n${message}`
+    : message
+
+  const booking = createBooking({
+    services: serviceId ? [serviceId] : [],
+    customer: {
+      name,
+      phone,
+      email: email ?? '',
+      postalCode: postcode,
+      notes: fullNotes,
+    },
+  })
+
+  return { success: true, quoteId: booking.id }
 }
 
 export async function getAdminBookingsAction(): Promise<Booking[]> {

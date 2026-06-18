@@ -17,7 +17,6 @@ export const contactSchema = z.object({
     .min(1, 'Phone number is required')
     .refine(
       (v) => {
-        // Strip spaces, hyphens, and parentheses before checking format
         const stripped = v.replace(/[\s\-\(\)]/g, '')
         return /^(\+44|0044|0)\d{9,10}$/.test(stripped)
       },
@@ -48,5 +47,35 @@ export const bookingSchema = z.object({
   customer: contactSchema,
 })
 
+// Simpler quote request form — single page, no scheduling
+export const quoteSchema = z.object({
+  name: z.string().min(2, 'Full name is required').max(100),
+  phone: z
+    .string()
+    .min(1, 'Phone number is required')
+    .refine(
+      (v) => {
+        const stripped = v.replace(/[\s\-\(\)]/g, '')
+        return /^(\+44|0044|0)\d{9,10}$/.test(stripped)
+      },
+      'Enter a valid UK phone number (e.g. 07700 900123)'
+    ),
+  email: z
+    .string()
+    .email('Enter a valid email address')
+    .optional()
+    .or(z.literal('')),
+  postcode: z
+    .string()
+    .min(1, 'Postcode is required')
+    .regex(/^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i, 'Enter a valid UK postcode (e.g. WN8 9AB)'),
+  service: z.string().optional(),
+  message: z
+    .string()
+    .min(5, 'Please describe your cleaning requirements')
+    .max(1000, 'Message cannot exceed 1000 characters'),
+})
+
 export type ContactFormData = z.infer<typeof contactSchema>
 export type BookingFormData = z.infer<typeof bookingSchema>
+export type QuoteFormData = z.infer<typeof quoteSchema>
