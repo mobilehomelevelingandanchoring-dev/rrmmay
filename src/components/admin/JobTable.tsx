@@ -10,6 +10,7 @@ import {
 import { StatusBadge } from './StatusBadge'
 import { updateBookingStatusAction, deleteBookingAction } from '@/lib/bookingActions'
 import { BOOKING_SERVICES } from '@/data/bookingServices'
+import { formatReceivedAt, formatFullDateTime, formatScheduledDate, formatTime12 } from '@/lib/dateUtils'
 import type { Booking, BookingStatus } from '@/types/booking'
 
 interface JobTableProps {
@@ -22,19 +23,6 @@ const STATUS_OPTIONS: { value: BookingStatus; label: string }[] = [
   { value: 'completed', label: 'Completed' },
   { value: 'cancelled', label: 'Cancelled' },
 ]
-
-function formatDate(dateStr: string): string {
-  return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-GB', {
-    day: '2-digit', month: 'short', year: 'numeric',
-  })
-}
-
-function formatTime(t: string): string {
-  const [h, m] = t.split(':').map(Number)
-  const period = h < 12 ? 'AM' : 'PM'
-  const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h
-  return `${h12}:${String(m).padStart(2, '0')} ${period}`
-}
 
 function buildCopyText(booking: Booking): string {
   const lines: string[] = [
@@ -50,7 +38,7 @@ function buildCopyText(booking: Booking): string {
   if (booking.scheduledDate) lines.push(`Scheduled: ${booking.scheduledDate}${booking.scheduledTime ? ' at ' + booking.scheduledTime : ''}`)
   if (booking.confirmedPrice) lines.push(`Price: £${booking.confirmedPrice.toFixed(2)}`)
   lines.push(`Status: ${booking.status}`)
-  lines.push(`Submitted: ${new Date(booking.createdAt).toLocaleDateString('en-GB')}`)
+  lines.push(`Submitted: ${formatFullDateTime(booking.createdAt)}`)
   return lines.join('\n')
 }
 
@@ -183,7 +171,13 @@ export function JobTable({ bookings }: JobTableProps) {
               <TableRow key={booking.id} className="hover:bg-muted/30 align-top">
                 <TableCell className="py-4">
                   <p className="text-xs font-mono text-muted-foreground">{booking.id}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{formatDate(booking.createdAt)}</p>
+                  <p
+                    className="text-xs text-muted-foreground mt-0.5"
+                    title={formatFullDateTime(booking.createdAt)}
+                    suppressHydrationWarning
+                  >
+                    {formatReceivedAt(booking.createdAt)}
+                  </p>
                 </TableCell>
 
                 <TableCell className="py-4">
@@ -220,8 +214,8 @@ export function JobTable({ bookings }: JobTableProps) {
                 <TableCell className="py-4">
                   {hasSchedule ? (
                     <>
-                      <p className="text-sm font-medium text-foreground">{formatDate(booking.scheduledDate!)}</p>
-                      <p className="text-xs text-muted-foreground">{formatTime(booking.scheduledTime!)}</p>
+                      <p className="text-sm font-medium text-foreground">{formatScheduledDate(booking.scheduledDate!)}</p>
+                      <p className="text-xs text-muted-foreground">{formatTime12(booking.scheduledTime!)}</p>
                       {booking.estimatedDurationHours ? (
                         <p className="text-xs text-muted-foreground">~{booking.estimatedDurationHours}h</p>
                       ) : null}
