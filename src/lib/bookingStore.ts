@@ -45,11 +45,16 @@ function writeToFile(bookings: Booking[]): void {
 }
 
 // ─── Upstash REST API (direct fetch — no SDK) ───────────────────────────────
-// Using the Upstash Redis REST API directly is more reliable in serverless
-// than the @upstash/redis SDK because it uses one stateless fetch per call.
+// Uses the Upstash command format: POST / with body ["COMMAND", arg1, arg2]
+// This is the most reliable approach in serverless — one stateless fetch per call.
 async function upstashGet(key: string): Promise<string | null> {
-  const res = await fetch(`${REDIS_URL}/get/${encodeURIComponent(key)}`, {
-    headers: { Authorization: `Bearer ${REDIS_TOKEN}` },
+  const res = await fetch(REDIS_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${REDIS_TOKEN}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(['GET', key]),
     cache: 'no-store',
   })
   if (!res.ok) throw new Error(`Upstash GET failed: ${res.status} ${await res.text()}`)
@@ -58,13 +63,13 @@ async function upstashGet(key: string): Promise<string | null> {
 }
 
 async function upstashSet(key: string, value: string): Promise<void> {
-  const res = await fetch(`${REDIS_URL}/set/${encodeURIComponent(key)}`, {
+  const res = await fetch(REDIS_URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${REDIS_TOKEN}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify([value]),
+    body: JSON.stringify(['SET', key, value]),
     cache: 'no-store',
   })
   if (!res.ok) throw new Error(`Upstash SET failed: ${res.status} ${await res.text()}`)

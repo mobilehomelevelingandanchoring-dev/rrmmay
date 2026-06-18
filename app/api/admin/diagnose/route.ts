@@ -29,19 +29,23 @@ export async function GET() {
 
   if (useRedis) {
     try {
-      // Test write via direct REST
-      const writeRes = await fetch(`${redisUrl}/set/rrm:diagnose-test`, {
+      const headers = { Authorization: `Bearer ${redisToken}`, 'Content-Type': 'application/json' }
+
+      // Test write
+      const writeRes = await fetch(redisUrl, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${redisToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify([`ping-${Date.now()}`]),
+        headers,
+        body: JSON.stringify(['SET', 'rrm:diagnose-test', `ping-${Date.now()}`]),
         cache: 'no-store',
       })
       const writeJson = await writeRes.json() as { result?: unknown; error?: string }
-      info.write_test = writeRes.ok ? `OK (result: ${writeJson.result})` : `FAILED: ${writeJson.error}`
+      info.write_test = writeRes.ok ? `OK (result: ${writeJson.result})` : `FAILED: ${JSON.stringify(writeJson)}`
 
       // Read bookings
-      const readRes = await fetch(`${redisUrl}/get/rrm:bookings`, {
-        headers: { Authorization: `Bearer ${redisToken}` },
+      const readRes = await fetch(redisUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(['GET', 'rrm:bookings']),
         cache: 'no-store',
       })
       const readJson = await readRes.json() as { result?: string | null }
