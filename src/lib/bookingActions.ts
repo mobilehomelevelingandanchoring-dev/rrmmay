@@ -11,6 +11,7 @@ import {
 import {
   createBooking,
   updateBooking,
+  deleteBooking,
   getAllBookings,
   getBookedTimeSlotsForDate,
 } from '@/lib/bookingStore'
@@ -114,6 +115,20 @@ export async function updateBookingStatusAction(
   if (!result) return { success: false, error: 'Booking not found' }
   revalidatePath('/admin/dashboard')
   return { success: true }
+}
+
+export async function deleteBookingAction(
+  id: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const deleted = await deleteBooking(id)
+    if (!deleted) return { success: false, error: 'Booking not found' }
+    revalidatePath('/admin/dashboard')
+    return { success: true }
+  } catch (err) {
+    console.error('[deleteBookingAction] error:', err)
+    return { success: false, error: 'Failed to delete booking' }
+  }
 }
 
 export async function getAvailableSlotsAction(dateStr: string): Promise<string[]> {

@@ -159,6 +159,14 @@ export async function updateBooking(
   return bookings[index]
 }
 
+export async function deleteBooking(id: string): Promise<boolean> {
+  const bookings = await readBookings()
+  const filtered = bookings.filter((b) => b.id !== id)
+  if (filtered.length === bookings.length) return false
+  await writeBookings(filtered)
+  return true
+}
+
 export async function getBookedTimeSlotsForDate(dateStr: string): Promise<string[]> {
   const bookings = await readBookings()
   return bookings
