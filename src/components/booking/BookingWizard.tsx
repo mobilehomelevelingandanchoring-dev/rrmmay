@@ -181,10 +181,7 @@ export function BookingWizard() {
       {/* Step content */}
       <main className="px-4 pt-6 pb-36">
         <div
-          className={cn(
-            'transition-all duration-300',
-            'animate-in fade-in-0 slide-in-from-right-4'
-          )}
+          className="animate-in fade-in-0 duration-200"
           key={step}
         >
           {step === 1 && (

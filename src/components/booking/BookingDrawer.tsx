@@ -115,6 +115,7 @@ export function BookingDrawer({
       <div className="px-4 py-3 flex items-center gap-3">
         {/* Summary toggle */}
         <button
+          type="button"
           onClick={() => setExpanded((e) => !e)}
           className="flex flex-col min-w-0 flex-1 text-left"
           aria-label={expanded ? 'Collapse booking summary' : 'Expand booking summary'}

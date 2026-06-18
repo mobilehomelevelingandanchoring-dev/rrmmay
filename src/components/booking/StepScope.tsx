@@ -43,6 +43,7 @@ export function StepScope({
             return (
               <button
                 key={service.id}
+                type="button"
                 onClick={() => toggleService(service.id)}
                 aria-pressed={selected}
                 className={cn(
@@ -94,6 +95,7 @@ export function StepScope({
             return (
               <button
                 key={opt.value}
+                type="button"
                 onClick={() => onPropertyTypeChange(opt.value)}
                 aria-pressed={selected}
                 className={cn(

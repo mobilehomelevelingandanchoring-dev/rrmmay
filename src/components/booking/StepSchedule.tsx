@@ -67,6 +67,7 @@ export function StepSchedule({
 
     return (
       <button
+        type="button"
         onClick={() => !isBooked && onTimeChange(time)}
         disabled={isBooked}
         aria-pressed={isSelected}
