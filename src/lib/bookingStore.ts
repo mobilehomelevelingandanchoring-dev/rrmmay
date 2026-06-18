@@ -3,11 +3,13 @@ import path from 'path'
 import type { Booking } from '@/types/booking'
 
 // ─── Storage strategy ────────────────────────────────────────────────────────
-// Production (Vercel): use Vercel KV (Redis) — persistent, shared across all
-//   serverless function instances. Requires KV_REST_API_URL env var.
-// Development / self-hosted: fall back to local JSON file.
-const USE_KV = !!(process.env.KV_REST_API_URL)
-const KV_KEY = 'rrm:bookings'
+// Production (Vercel + Upstash): UPSTASH_REDIS_REST_URL is set automatically
+//   when you connect an Upstash Redis database in the Vercel marketplace.
+//   All serverless instances share the same Redis — bookings persist correctly.
+//
+// Development / self-hosted (no env var): falls back to a local JSON file.
+const USE_REDIS = !!(process.env.UPSTASH_REDIS_REST_URL)
+const REDIS_KEY = 'rrm:bookings'
 
 // ─── File-system fallback (local dev) ───────────────────────────────────────
 const DATA_DIR = path.join(process.cwd(), 'data')
@@ -36,25 +38,39 @@ function writeToFile(bookings: Booking[]): void {
   } catch { /* ignore */ }
 }
 
-// ─── KV helpers ─────────────────────────────────────────────────────────────
-async function readFromKv(): Promise<Booking[]> {
-  const { kv } = await import('@vercel/kv')
-  return (await kv.get<Booking[]>(KV_KEY)) ?? []
+// ─── Redis helpers (Upstash) ─────────────────────────────────────────────────
+async function getRedis() {
+  const { Redis } = await import('@upstash/redis')
+  return new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL!,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+  })
 }
 
-async function writeToKv(bookings: Booking[]): Promise<void> {
-  const { kv } = await import('@vercel/kv')
-  await kv.set(KV_KEY, bookings)
+async function readFromRedis(): Promise<Booking[]> {
+  try {
+    const redis = await getRedis()
+    return (await redis.get<Booking[]>(REDIS_KEY)) ?? []
+  } catch {
+    return []
+  }
 }
 
-// ─── Shared helpers ──────────────────────────────────────────────────────────
+async function writeToRedis(bookings: Booking[]): Promise<void> {
+  try {
+    const redis = await getRedis()
+    await redis.set(REDIS_KEY, bookings)
+  } catch { /* ignore — log in production monitoring */ }
+}
+
+// ─── Internal read/write ─────────────────────────────────────────────────────
 async function readBookings(): Promise<Booking[]> {
-  return USE_KV ? readFromKv() : readFromFile()
+  return USE_REDIS ? readFromRedis() : readFromFile()
 }
 
 async function writeBookings(bookings: Booking[]): Promise<void> {
-  if (USE_KV) {
-    await writeToKv(bookings)
+  if (USE_REDIS) {
+    await writeToRedis(bookings)
   } else {
     writeToFile(bookings)
   }
@@ -66,7 +82,7 @@ function generateId(): string {
   return `BK-${ts}-${rand}`
 }
 
-// ─── Public API (all async) ──────────────────────────────────────────────────
+// ─── Public API ───────────────────────────────────────────────────────────────
 
 export async function getAllBookings(): Promise<Booking[]> {
   const bookings = await readBookings()
