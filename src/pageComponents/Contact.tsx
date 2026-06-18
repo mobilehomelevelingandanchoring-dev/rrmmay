@@ -83,7 +83,7 @@ export default function Contact() {
     setServerError(null);
     const result = await submitQuoteAction(data);
     if (result.success && result.quoteId) {
-      router.push(`/book/success?id=${result.quoteId}`);
+      router.replace(`/book/success?id=${result.quoteId}`);
     } else {
       setServerError(result.error ?? 'Something went wrong. Please try again.');
     }

@@ -58,7 +58,7 @@ export function QuoteForm() {
     try {
       const result = await submitQuoteAction(data)
       if (result.success && result.quoteId) {
-        router.push(`/book/success?id=${result.quoteId}`)
+        router.replace(`/book/success?id=${result.quoteId}`)
       } else {
         setError(result.error ?? 'Something went wrong. Please try again.')
       }
