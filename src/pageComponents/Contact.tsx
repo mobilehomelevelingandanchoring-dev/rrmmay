@@ -1,26 +1,39 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
-import { Phone, Mail, MapPin, Clock, Send, CheckCircle } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Send, CheckCircle, Loader2 } from 'lucide-react';
+import { quoteSchema, type QuoteFormData } from '@/lib/bookingSchema';
+import { submitQuoteAction } from '@/lib/bookingActions';
+
+const SERVICE_OPTIONS = [
+  { value: '', label: 'Select a service...' },
+  { value: 'pressure-washing', label: 'Pressure Washing' },
+  { value: 'window-cleaning', label: 'Window Cleaning' },
+  { value: 'gutter-clearing', label: 'Gutter Clearing' },
+  { value: 'roof-cleaning', label: 'Roof Cleaning' },
+  { value: 'conservatory-cleaning', label: 'Conservatory Cleaning' },
+  { value: 'render-cleaning', label: 'Render / K-Rend Cleaning' },
+  { value: 'driveway-cleaning', label: 'Driveway Cleaning' },
+  { value: 'patio-cleaning', label: 'Patio Cleaning' },
+  { value: 'fascia-soffit-cleaning', label: 'Fascia & Soffit Cleaning' },
+  { value: 'commercial-cleaning', label: 'Commercial Exterior Cleaning' },
+  { value: 'other', label: 'Other / Not Sure' },
+];
 
 const contactDetails = [
   {
     icon: Phone,
     title: 'Phone',
-    body: 'Call for a free quote',
+    body: '07845 463877',
     href: 'tel:+447845463877',
     isLink: true,
   },
@@ -53,13 +66,28 @@ const contactDetails = [
 ];
 
 export default function Contact() {
-  const [submitted, setSubmitted] = useState(false);
+  const router = useRouter();
+  const [serverError, setServerError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // In a real implementation, this would send the form data
-    setSubmitted(true);
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<QuoteFormData>({
+    resolver: zodResolver(quoteSchema),
+    defaultValues: { name: '', phone: '', email: '', postcode: '', service: '', message: '' },
+    mode: 'onTouched',
+  });
+
+  async function onSubmit(data: QuoteFormData) {
+    setServerError(null);
+    const result = await submitQuoteAction(data);
+    if (result.success && result.quoteId) {
+      router.push(`/book/success?id=${result.quoteId}`);
+    } else {
+      setServerError(result.error ?? 'Something went wrong. Please try again.');
+    }
+  }
 
   return (
     <Layout>
@@ -137,97 +165,74 @@ export default function Contact() {
                     Fill out the form below and we'll get back to you as soon as possible.
                   </p>
 
-                  {submitted ? (
-                    <div className="text-center py-12">
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success/10 mx-auto mb-4">
-                        <CheckCircle className="h-8 w-8 text-success" aria-hidden="true" />
+                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <div className="space-y-1">
+                        <Label htmlFor="name">Name <span className="text-destructive">*</span></Label>
+                        <Input id="name" placeholder="Your name" {...register('name')} />
+                        {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
                       </div>
-                      <h3 className="font-display text-xl font-bold text-foreground mb-2">
-                        Thank You!
-                      </h3>
-                      <p className="text-muted-foreground">
-                        We've received your message and will be in touch shortly.
-                      </p>
+                      <div className="space-y-1">
+                        <Label htmlFor="phone">Phone <span className="text-destructive">*</span></Label>
+                        <Input id="phone" type="tel" placeholder="Your phone number" {...register('phone')} />
+                        {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
+                      </div>
                     </div>
-                  ) : (
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                      <div className="grid gap-5 sm:grid-cols-2">
-                        <div className="space-y-2">
-                          <Label htmlFor="name">Name *</Label>
-                          <Input
-                            id="name"
-                            placeholder="Your name"
-                            required
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="phone">Phone *</Label>
-                          <Input
-                            id="phone"
-                            type="tel"
-                            placeholder="Your phone number"
-                            required
-                          />
-                        </div>
+
+                    <div className="space-y-1">
+                      <Label htmlFor="email">Email <span className="text-muted-foreground font-normal">(optional)</span></Label>
+                      <Input id="email" type="email" placeholder="Your email address" {...register('email')} />
+                      {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label htmlFor="postcode">Postcode <span className="text-destructive">*</span></Label>
+                      <Input id="postcode" placeholder="e.g. WA12 8QY" className="uppercase" {...register('postcode')} />
+                      {errors.postcode && <p className="text-xs text-destructive">Enter a valid UK postcode</p>}
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label htmlFor="service">Service Required</Label>
+                      <select
+                        id="service"
+                        {...register('service')}
+                        className="w-full h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+                      >
+                        {SERVICE_OPTIONS.map((opt) => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label htmlFor="message">Message <span className="text-destructive">*</span></Label>
+                      <Textarea
+                        id="message"
+                        placeholder="Tell us about your cleaning requirements..."
+                        rows={4}
+                        {...register('message')}
+                      />
+                      {errors.message && <p className="text-xs text-destructive">{errors.message.message}</p>}
+                    </div>
+
+                    {serverError && (
+                      <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                        <p className="text-sm text-destructive">{serverError}</p>
                       </div>
+                    )}
 
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="Your email address"
-                        />
-                      </div>
+                    <Button type="submit" variant="highlight" size="lg" className="w-full" disabled={isSubmitting}>
+                      {isSubmitting ? (
+                        <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending…</>
+                      ) : (
+                        <><Send className="mr-2 h-4 w-4" aria-hidden="true" /> Send Message</>
+                      )}
+                    </Button>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="postcode">Postcode *</Label>
-                        <Input
-                          id="postcode"
-                          placeholder="Your postcode"
-                          required
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="service">Service Required</Label>
-                        <Select>
-                          <SelectTrigger id="service" className="h-11">
-                            <SelectValue placeholder="Select a service..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="pressure-washing">Pressure Washing</SelectItem>
-                            <SelectItem value="driveway-cleaning">Driveway Cleaning</SelectItem>
-                            <SelectItem value="roof-cleaning">Roof Cleaning</SelectItem>
-                            <SelectItem value="gutter-cleaning">Gutter Cleaning</SelectItem>
-                            <SelectItem value="window-cleaning">Window Cleaning</SelectItem>
-                            <SelectItem value="render-cleaning">Render Cleaning</SelectItem>
-                            <SelectItem value="multiple">Multiple Services</SelectItem>
-                            <SelectItem value="other">Other / Not Sure</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="message">Message *</Label>
-                        <Textarea
-                          id="message"
-                          placeholder="Tell us about your cleaning requirements..."
-                          rows={4}
-                          required
-                        />
-                      </div>
-
-                      <Button type="submit" variant="highlight" size="lg" className="w-full">
-                        <Send className="mr-2 h-4 w-4" aria-hidden="true" />
-                        Send Message
-                      </Button>
-
-                      <p className="text-xs text-muted-foreground text-center">
-                        We'll respond within 24 hours. Your information is kept private.
-                      </p>
-                    </form>
-                  )}
+                    <p className="text-xs text-muted-foreground text-center">
+                      We'll respond within 24 hours. Your information is kept private.
+                    </p>
+                  </form>
                 </CardContent>
               </Card>
             </div>

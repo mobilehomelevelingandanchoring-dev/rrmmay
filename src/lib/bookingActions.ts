@@ -59,36 +59,38 @@ export async function submitBookingAction(
 export async function submitQuoteAction(
   data: QuoteFormData
 ): Promise<{ success: boolean; quoteId?: string; error?: string }> {
-  const parsed = quoteSchema.safeParse(data)
-  if (!parsed.success) {
-    return { success: false, error: 'Invalid form data. Please check your entries.' }
+  try {
+    const parsed = quoteSchema.safeParse(data)
+    if (!parsed.success) {
+      return { success: false, error: 'Invalid form data. Please check your entries.' }
+    }
+
+    const { name, phone, email, postcode, service, message } = parsed.data
+
+    const serviceId = service && KNOWN_SERVICE_IDS.includes(service as ServiceId)
+      ? (service as ServiceId)
+      : null
+
+    const fullNotes = service && !serviceId && service !== ''
+      ? `Service requested: ${service}\n\n${message}`
+      : message
+
+    const booking = await createBooking({
+      services: serviceId ? [serviceId] : [],
+      customer: {
+        name,
+        phone,
+        email: email ?? '',
+        postalCode: postcode,
+        notes: fullNotes,
+      },
+    })
+
+    return { success: true, quoteId: booking.id }
+  } catch (err) {
+    console.error('[submitQuoteAction] error:', err)
+    return { success: false, error: 'Something went wrong. Please call us on 07845 463877.' }
   }
-
-  const { name, phone, email, postcode, service, message } = parsed.data
-
-  // Map to known ServiceId if the dropdown value is one of our standard IDs
-  const serviceId = service && KNOWN_SERVICE_IDS.includes(service as ServiceId)
-    ? (service as ServiceId)
-    : null
-
-  // For non-standard service selections (render-cleaning, driveway-cleaning, other, etc.)
-  // prepend service label to the customer message so admin can see it
-  const fullNotes = service && !serviceId && service !== ''
-    ? `Service requested: ${service}\n\n${message}`
-    : message
-
-  const booking = await createBooking({
-    services: serviceId ? [serviceId] : [],
-    customer: {
-      name,
-      phone,
-      email: email ?? '',
-      postalCode: postcode,
-      notes: fullNotes,
-    },
-  })
-
-  return { success: true, quoteId: booking.id }
 }
 
 export async function getAdminBookingsAction(): Promise<Booking[]> {

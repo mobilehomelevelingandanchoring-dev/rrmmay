@@ -92,7 +92,6 @@ async function writeToRedis(bookings: Booking[]): Promise<void> {
     await upstashSet(REDIS_KEY, JSON.stringify(bookings))
   } catch (err) {
     console.error('[bookingStore] Redis write error:', err)
-    throw err
   }
 }
 
