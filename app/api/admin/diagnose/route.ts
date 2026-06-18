@@ -15,8 +15,8 @@ export async function GET() {
   const prefixedUrl = process.env.rrmexternalcleaningspecialist_KV_REST_API_URL
   const prefixedToken = process.env.rrmexternalcleaningspecialist_KV_REST_API_TOKEN
 
-  const redisUrl = upstashUrl ?? kvUrl ?? prefixedUrl ?? ''
-  const redisToken = upstashToken ?? kvToken ?? prefixedToken ?? ''
+  const redisUrl = prefixedUrl ?? kvUrl ?? upstashUrl ?? ''
+  const redisToken = prefixedToken ?? kvToken ?? upstashToken ?? ''
   const useRedis = !!(redisUrl && redisToken)
 
   const info: Record<string, unknown> = {
