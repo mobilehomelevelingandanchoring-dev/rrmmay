@@ -28,31 +28,36 @@ const KNOWN_SERVICE_IDS: ServiceId[] = [
 export async function submitBookingAction(
   data: BookingFormData
 ): Promise<{ success: boolean; bookingId?: string; error?: string }> {
-  const parsed = bookingSchema.safeParse(data)
-  if (!parsed.success) {
-    return { success: false, error: 'Invalid form data. Please check your entries.' }
+  try {
+    const parsed = bookingSchema.safeParse(data)
+    if (!parsed.success) {
+      return { success: false, error: 'Invalid form data. Please check your entries.' }
+    }
+
+    const { services, propertyType, bedroomCount, scheduledDate, scheduledTime, customer } =
+      parsed.data
+    const { durationHours, estimatedPrice } = calculateEstimate(
+      services,
+      propertyType,
+      bedroomCount
+    )
+
+    const booking = await createBooking({
+      services,
+      propertyType,
+      bedroomCount,
+      scheduledDate,
+      scheduledTime,
+      estimatedDurationHours: durationHours,
+      estimatedPrice,
+      customer,
+    })
+
+    return { success: true, bookingId: booking.id }
+  } catch (err) {
+    console.error('[submitBookingAction] error:', err)
+    return { success: false, error: 'Something went wrong. Please call us on 07845 463877.' }
   }
-
-  const { services, propertyType, bedroomCount, scheduledDate, scheduledTime, customer } =
-    parsed.data
-  const { durationHours, estimatedPrice } = calculateEstimate(
-    services,
-    propertyType,
-    bedroomCount
-  )
-
-  const booking = await createBooking({
-    services,
-    propertyType,
-    bedroomCount,
-    scheduledDate,
-    scheduledTime,
-    estimatedDurationHours: durationHours,
-    estimatedPrice,
-    customer,
-  })
-
-  return { success: true, bookingId: booking.id }
 }
 
 // Quote request form — simpler single-page form, no scheduling

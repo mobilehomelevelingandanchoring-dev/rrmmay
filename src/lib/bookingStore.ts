@@ -45,40 +45,32 @@ function writeToFile(bookings: Booking[]): void {
 }
 
 // ─── Upstash REST API (direct fetch — no SDK) ───────────────────────────────
-// Uses the Upstash command format: POST / with body ["COMMAND", arg1, arg2]
-// This is the most reliable approach in serverless — one stateless fetch per call.
-async function upstashGet(key: string): Promise<string | null> {
-  const res = await fetch(REDIS_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${REDIS_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(['GET', key]),
-    cache: 'no-store',
-  })
-  if (!res.ok) throw new Error(`Upstash GET failed: ${res.status} ${await res.text()}`)
-  const json = await res.json() as { result: string | null }
-  return json.result
-}
-
-async function upstashSet(key: string, value: string): Promise<void> {
-  const res = await fetch(REDIS_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${REDIS_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(['SET', key, value]),
-    cache: 'no-store',
-  })
-  if (!res.ok) throw new Error(`Upstash SET failed: ${res.status} ${await res.text()}`)
+async function upstashFetch(command: unknown[]): Promise<unknown> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 8000)
+  try {
+    const res = await fetch(REDIS_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${REDIS_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(command),
+      cache: 'no-store',
+      signal: controller.signal,
+    })
+    const json = await res.json() as { result?: unknown; error?: string }
+    if (!res.ok || json.error) throw new Error(json.error ?? `HTTP ${res.status}`)
+    return json.result ?? null
+  } finally {
+    clearTimeout(timer)
+  }
 }
 
 async function readFromRedis(): Promise<Booking[]> {
   try {
-    const raw = await upstashGet(REDIS_KEY)
-    if (!raw) return []
+    const raw = await upstashFetch(['GET', REDIS_KEY])
+    if (!raw || typeof raw !== 'string') return []
     const parsed = JSON.parse(raw)
     return Array.isArray(parsed) ? parsed : []
   } catch (err) {
@@ -89,7 +81,7 @@ async function readFromRedis(): Promise<Booking[]> {
 
 async function writeToRedis(bookings: Booking[]): Promise<void> {
   try {
-    await upstashSet(REDIS_KEY, JSON.stringify(bookings))
+    await upstashFetch(['SET', REDIS_KEY, JSON.stringify(bookings)])
   } catch (err) {
     console.error('[bookingStore] Redis write error:', err)
   }
