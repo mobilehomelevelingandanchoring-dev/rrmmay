@@ -174,3 +174,21 @@ export async function getBookedTimeSlotsForDate(dateStr: string): Promise<string
     .map((b) => b.scheduledTime ?? '')
     .filter(Boolean)
 }
+
+// ─── Admin password override (stored in Redis so it survives deploys) ────────
+const ADMIN_PW_KEY = 'rrm:admin_password'
+
+export async function getAdminPasswordOverride(): Promise<string | null> {
+  if (!USE_REDIS) return null
+  try {
+    const raw = await upstashFetch(['GET', ADMIN_PW_KEY])
+    return typeof raw === 'string' ? raw : null
+  } catch {
+    return null
+  }
+}
+
+export async function setAdminPasswordOverride(password: string): Promise<void> {
+  if (!USE_REDIS) return
+  await upstashFetch(['SET', ADMIN_PW_KEY, password])
+}

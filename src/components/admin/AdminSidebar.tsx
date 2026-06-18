@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
-  Calendar,
   Settings,
   LogOut,
   Menu,
@@ -18,7 +17,6 @@ import { logoutAction } from '@/lib/adminAuth'
 
 const NAV_ITEMS = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin/schedule', label: 'Schedule', icon: Calendar },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
 ] as const
 

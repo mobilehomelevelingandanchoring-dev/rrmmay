@@ -2,6 +2,7 @@
 
 import { cookies } from 'next/headers'
 import { createHmac } from 'crypto'
+import { getAdminPasswordOverride, setAdminPasswordOverride } from './bookingStore'
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? 'rrm2026.com'
 const SESSION_COOKIE = 'rrm_admin_session'
@@ -41,7 +42,8 @@ export async function loginAction(
   password: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    if (password !== ADMIN_PASSWORD) {
+    const effectivePassword = (await getAdminPasswordOverride()) ?? ADMIN_PASSWORD
+    if (password !== effectivePassword) {
       return { success: false, error: 'Incorrect password' }
     }
     const token = buildSessionToken()
@@ -75,5 +77,27 @@ export async function isAdminAuthenticated(): Promise<boolean> {
     return !!token && verifySessionToken(token)
   } catch {
     return false
+  }
+}
+
+export async function changePasswordAction(
+  currentPassword: string,
+  newPassword: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    if (!(await isAdminAuthenticated())) {
+      return { success: false, error: 'Not authenticated' }
+    }
+    const effectivePassword = (await getAdminPasswordOverride()) ?? ADMIN_PASSWORD
+    if (currentPassword !== effectivePassword) {
+      return { success: false, error: 'Current password is incorrect' }
+    }
+    if (newPassword.length < 8) {
+      return { success: false, error: 'New password must be at least 8 characters' }
+    }
+    await setAdminPasswordOverride(newPassword)
+    return { success: true }
+  } catch {
+    return { success: false, error: 'Failed to update password. Please try again.' }
   }
 }
