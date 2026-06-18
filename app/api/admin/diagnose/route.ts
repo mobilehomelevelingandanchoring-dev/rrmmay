@@ -18,7 +18,7 @@ export async function GET() {
   const useRedis = !!(redisUrl && redisToken)
 
   const info: Record<string, unknown> = {
-    storage: useRedis ? 'redis' : 'local-file (ephemeral on Vercel!)',
+    storage: useRedis ? 'redis' : 'local-file (EPHEMERAL on Vercel — bookings will be lost!)',
     env: {
       UPSTASH_REDIS_REST_URL: upstashUrl ? '✓ set' : '✗ missing',
       UPSTASH_REDIS_REST_TOKEN: upstashToken ? '✓ set' : '✗ missing',
@@ -29,19 +29,26 @@ export async function GET() {
 
   if (useRedis) {
     try {
-      const { Redis } = await import('@upstash/redis')
-      const redis = new Redis({ url: redisUrl, token: redisToken })
-
-      // Test write
-      await redis.set('rrm:diagnose-test', JSON.stringify({ ok: true, ts: Date.now() }))
-      const writeCheck = await redis.get<string>('rrm:diagnose-test')
-      info.write_test = writeCheck ? 'OK' : 'FAILED — write did not persist'
+      // Test write via direct REST
+      const writeRes = await fetch(`${redisUrl}/set/rrm:diagnose-test`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${redisToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify([`ping-${Date.now()}`]),
+        cache: 'no-store',
+      })
+      const writeJson = await writeRes.json() as { result?: unknown; error?: string }
+      info.write_test = writeRes.ok ? `OK (result: ${writeJson.result})` : `FAILED: ${writeJson.error}`
 
       // Read bookings
-      const raw = await redis.get<unknown>('rrm:bookings')
-      info.redis_test = 'connection OK'
-      info.bookings_raw_type = Array.isArray(raw) ? 'array' : typeof raw
-      info.booking_count = Array.isArray(raw) ? raw.length : 0
+      const readRes = await fetch(`${redisUrl}/get/rrm:bookings`, {
+        headers: { Authorization: `Bearer ${redisToken}` },
+        cache: 'no-store',
+      })
+      const readJson = await readRes.json() as { result?: string | null }
+      const raw = readJson.result
+      const parsed = raw ? JSON.parse(raw) : null
+      info.booking_count = Array.isArray(parsed) ? parsed.length : 0
+      info.bookings_raw_type = Array.isArray(parsed) ? 'array' : typeof parsed
     } catch (err) {
       info.redis_test = 'FAILED'
       info.redis_error = String(err)

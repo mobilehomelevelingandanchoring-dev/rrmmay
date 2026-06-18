@@ -3,14 +3,13 @@ import path from 'path'
 import type { Booking } from '@/types/booking'
 
 // ─── Storage strategy ────────────────────────────────────────────────────────
-// Production (Vercel + Upstash): env vars are injected automatically when you
-//   connect an Upstash database via the Vercel marketplace. Two naming
-//   conventions exist depending on how the integration was created:
-//     • New Upstash integration: UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN
-//     • Vercel KV (legacy):      KV_REST_API_URL / KV_REST_API_TOKEN
-//   We support both.
+// Production (Vercel + Upstash): uses the Upstash REST API directly via fetch.
+// No SDK needed — avoids connection-pool / cold-start issues in serverless.
+// Supports both env var naming conventions Vercel can inject:
+//   • UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN  (new Upstash integration)
+//   • KV_REST_API_URL / KV_REST_API_TOKEN                (legacy Vercel KV)
 //
-// Development / self-hosted (no env var): falls back to a local JSON file.
+// Development / self-hosted: falls back to a local JSON file.
 const REDIS_URL =
   process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL ?? ''
 const REDIS_TOKEN =
@@ -45,18 +44,37 @@ function writeToFile(bookings: Booking[]): void {
   } catch { /* ignore */ }
 }
 
-// ─── Redis helpers (Upstash) ─────────────────────────────────────────────────
-async function getRedis() {
-  const { Redis } = await import('@upstash/redis')
-  return new Redis({ url: REDIS_URL, token: REDIS_TOKEN })
+// ─── Upstash REST API (direct fetch — no SDK) ───────────────────────────────
+// Using the Upstash Redis REST API directly is more reliable in serverless
+// than the @upstash/redis SDK because it uses one stateless fetch per call.
+async function upstashGet(key: string): Promise<string | null> {
+  const res = await fetch(`${REDIS_URL}/get/${encodeURIComponent(key)}`, {
+    headers: { Authorization: `Bearer ${REDIS_TOKEN}` },
+    cache: 'no-store',
+  })
+  if (!res.ok) throw new Error(`Upstash GET failed: ${res.status} ${await res.text()}`)
+  const json = await res.json() as { result: string | null }
+  return json.result
+}
+
+async function upstashSet(key: string, value: string): Promise<void> {
+  const res = await fetch(`${REDIS_URL}/set/${encodeURIComponent(key)}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${REDIS_TOKEN}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify([value]),
+    cache: 'no-store',
+  })
+  if (!res.ok) throw new Error(`Upstash SET failed: ${res.status} ${await res.text()}`)
 }
 
 async function readFromRedis(): Promise<Booking[]> {
   try {
-    const redis = await getRedis()
-    const raw = await redis.get<string>(REDIS_KEY)
+    const raw = await upstashGet(REDIS_KEY)
     if (!raw) return []
-    const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
+    const parsed = JSON.parse(raw)
     return Array.isArray(parsed) ? parsed : []
   } catch (err) {
     console.error('[bookingStore] Redis read error:', err)
@@ -66,10 +84,10 @@ async function readFromRedis(): Promise<Booking[]> {
 
 async function writeToRedis(bookings: Booking[]): Promise<void> {
   try {
-    const redis = await getRedis()
-    await redis.set(REDIS_KEY, JSON.stringify(bookings))
+    await upstashSet(REDIS_KEY, JSON.stringify(bookings))
   } catch (err) {
     console.error('[bookingStore] Redis write error:', err)
+    throw err
   }
 }
 
