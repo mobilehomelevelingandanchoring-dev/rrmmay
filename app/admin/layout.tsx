@@ -16,7 +16,7 @@ export default async function AdminLayout({
     return <>{children}</>
   }
 
-  const bookings = getAllBookings()
+  const bookings = await getAllBookings()
   const pendingCount = bookings.filter((b) => b.status === 'pending_quote').length
 
   return (

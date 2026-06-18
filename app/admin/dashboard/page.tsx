@@ -31,7 +31,7 @@ export default async function AdminDashboardPage({ searchParams }: PageProps) {
   if (!(await isAdminAuthenticated())) redirect('/admin/login')
 
   const { status: statusFilter = 'all' } = await searchParams
-  const allBookings = getAllBookings()
+  const allBookings = await getAllBookings()
 
   const filtered =
     statusFilter === 'all'

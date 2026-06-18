@@ -41,7 +41,7 @@ export async function submitBookingAction(
     bedroomCount
   )
 
-  const booking = createBooking({
+  const booking = await createBooking({
     services,
     propertyType,
     bedroomCount,
@@ -77,7 +77,7 @@ export async function submitQuoteAction(
     ? `Service requested: ${service}\n\n${message}`
     : message
 
-  const booking = createBooking({
+  const booking = await createBooking({
     services: serviceId ? [serviceId] : [],
     customer: {
       name,
@@ -92,7 +92,7 @@ export async function submitQuoteAction(
 }
 
 export async function getAdminBookingsAction(): Promise<Booking[]> {
-  return getAllBookings()
+  return await getAllBookings()
 }
 
 export async function updateBookingStatusAction(
@@ -100,7 +100,7 @@ export async function updateBookingStatusAction(
   status: Booking['status'],
   confirmedPrice?: number
 ): Promise<{ success: boolean; error?: string }> {
-  const result = updateBooking(id, {
+  const result = await updateBooking(id, {
     status,
     ...(confirmedPrice !== undefined && { confirmedPrice }),
   })
@@ -110,5 +110,5 @@ export async function updateBookingStatusAction(
 }
 
 export async function getAvailableSlotsAction(dateStr: string): Promise<string[]> {
-  return getBookedTimeSlotsForDate(dateStr)
+  return await getBookedTimeSlotsForDate(dateStr)
 }
